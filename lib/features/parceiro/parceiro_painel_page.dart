@@ -7,7 +7,7 @@ class ParceiroPainelPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(185, 55, 43, 100), // ou a cor do seu tema
+        backgroundColor: Color.fromRGBO(158, 13, 0, 1), // ou a cor do seu tema
         title: const Text(
           'Criar Doação',
           style: TextStyle(color: Colors.white),

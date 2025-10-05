@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,18 +15,47 @@ class _LoginPageState extends State<LoginPage> {
   final _authService = AuthService();
   bool _loading = false;
 
-  void _login() async {
-    setState(() => _loading = true);
-    try {
-      await _authService.signIn(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
+  Future<void> _login() async {
+    final email = _emailController.text.trim();
+    final senha = _passwordController.text.trim();
+
+    if (email.isEmpty || senha.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos.')),
       );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      await _authService.signIn(email, senha);
       Navigator.pushReplacementNamed(context, '/home');
+    } on FirebaseAuthException catch (e) {
+      String message = 'Erro ao fazer login.';
+
+      switch (e.code) {
+        case 'user-not-found':
+          message = 'Usuário não encontrado.';
+          break;
+        case 'wrong-password':
+          message = 'Senha incorreta.';
+          break;
+        case 'invalid-email':
+          message = 'E-mail inválido.';
+          break;
+        case 'user-disabled':
+          message = 'Usuário desativado.';
+          break;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erro: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro inesperado. Tente novamente.')),
+      );
     } finally {
       setState(() => _loading = false);
     }
@@ -47,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
             TextField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'E-mail'),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
             TextField(
@@ -59,8 +90,13 @@ class _LoginPageState extends State<LoginPage> {
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
                     onPressed: _login,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 48),
+                      backgroundColor: Colors.green,
+                    ),
                     child: const Text('Entrar'),
                   ),
+            const SizedBox(height: 8),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/register'),
               child: const Text('Criar conta'),
