@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(
-          'Erro',
+          "Erro ao fazer login"  ,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: Text(message),
@@ -103,13 +103,21 @@ class _LoginPageState extends State<LoginPage> {
             _loading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: _login,
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                      backgroundColor: const Color.fromARGB(255, 0, 42, 179),
-                    ),
-                    child: const Text('Entrar'),
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                    backgroundColor: const Color.fromARGB(255, 0, 42, 179),
                   ),
+                  child: const Text(
+                    'Entrar',
+                    style: TextStyle(
+                      color: Colors.white, // 🔹 texto branco
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/register'),
