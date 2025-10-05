@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../auth/services/auth_service.dart';
 import '../ong/ong_home_page.dart'; // ✅ importa a tela principal do menu da ONG
+// import '../parceiro/parceiro_painel_page.dart'; 
+import '../parceiro/parceiro_home_page.dart';// ✅ importa a tela principal do menu da ONG
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -65,6 +67,22 @@ class HomePage extends StatelessWidget {
                 );
               },
             ),
+
+            ListTile(
+  leading: const Icon(Icons.store_mall_directory),
+  title: const Text('Painel do Parceiro'),
+  onTap: () {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ParceiroHomePage(),
+      ),
+    );
+  },
+),
+
+
 
             const Divider(),
 

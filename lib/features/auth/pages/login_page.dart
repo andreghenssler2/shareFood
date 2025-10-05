@@ -39,9 +39,9 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'ShareFood',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            Image.asset(
+              'assets/images/logo.png',
+              height: 120,
             ),
             const SizedBox(height: 24),
             TextField(
