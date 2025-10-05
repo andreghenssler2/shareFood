@@ -20,9 +20,7 @@ class _LoginPageState extends State<LoginPage> {
     final senha = _passwordController.text.trim();
 
     if (email.isEmpty || senha.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Preencha todos os campos.')),
-      );
+      _showErrorDialog('Preencha todos os campos.');
       return;
     }
 
@@ -49,16 +47,32 @@ class _LoginPageState extends State<LoginPage> {
           break;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      _showErrorDialog(message);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro inesperado. Tente novamente.')),
-      );
+      _showErrorDialog('Erro inesperado. Tente novamente.');
     } finally {
       setState(() => _loading = false);
     }
+  }
+
+  // 🔹 Função para exibir o diálogo de erro
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Erro',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -92,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: _login,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 48),
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color.fromARGB(255, 0, 42, 179),
                     ),
                     child: const Text('Entrar'),
                   ),
