@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../auth/services/parceiro_service.dart';
 
 class ParceiroPerfilPage extends StatefulWidget {
@@ -16,6 +17,7 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
 
   final _nomeController = TextEditingController();
   final _empresaController = TextEditingController();
+  final _cnpjController = TextEditingController();
   final _telefoneController = TextEditingController();
   final _ruaController = TextEditingController();
   final _numeroController = TextEditingController();
@@ -25,6 +27,12 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
   User? user;
   bool _isLoading = true;
   bool _isEditing = false;
+  bool _cnpjBloqueado = false;
+
+  final cnpjMask = MaskTextInputFormatter(
+    mask: '##.###.###/####-##',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   @override
   void initState() {
@@ -40,11 +48,16 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
     if (dados != null) {
       _nomeController.text = dados['nome'] ?? '';
       _empresaController.text = dados['empresa'] ?? '';
+      _cnpjController.text = dados['cnpj'] ?? '';
       _telefoneController.text = dados['telefone'] ?? '';
       _ruaController.text = dados['endereco']?['rua'] ?? '';
       _numeroController.text = dados['endereco']?['numero'] ?? '';
       _cidadeController.text = dados['endereco']?['cidade'] ?? '';
       _ufController.text = dados['endereco']?['uf'] ?? '';
+
+      if (dados['cnpj'] != null && dados['cnpj'].toString().isNotEmpty) {
+        _cnpjBloqueado = true;
+      }
     }
 
     setState(() => _isLoading = false);
@@ -56,14 +69,15 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
     final dados = {
       'uid': user!.uid,
       'email': user!.email,
-      'nome': _nomeController.text,
-      'empresa': _empresaController.text,
-      'telefone': _telefoneController.text,
+      'nome': _nomeController.text.trim(),
+      'empresa': _empresaController.text.trim(),
+      'cnpj': _cnpjController.text.trim(),
+      'telefone': _telefoneController.text.trim(),
       'endereco': {
-        'rua': _ruaController.text,
-        'numero': _numeroController.text,
-        'cidade': _cidadeController.text,
-        'uf': _ufController.text,
+        'rua': _ruaController.text.trim(),
+        'numero': _numeroController.text.trim(),
+        'cidade': _cidadeController.text.trim(),
+        'uf': _ufController.text.trim(),
       },
       'atualizadoEm': FieldValue.serverTimestamp(),
     };
@@ -74,7 +88,10 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
       const SnackBar(content: Text('Perfil atualizado com sucesso!')),
     );
 
-    setState(() => _isEditing = false);
+    setState(() {
+      _isEditing = false;
+      _cnpjBloqueado = true; // bloqueia o campo após salvar
+    });
   }
 
   @override
@@ -84,21 +101,20 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-// appBar: AppBar(
-      //   backgroundColor: Color.fromRGBO(158, 13, 0, 1),
-      //   title: const Text(
-      //     'Painel do Parceiro',
-      //     style: TextStyle(color: Colors.white),
-      //   ),
-      //   iconTheme: const IconThemeData(color: Colors.white),
-      // ),
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Meu Perfil',style: TextStyle(color: Colors.white),),
-        backgroundColor: Color.fromRGBO(158, 13, 0, 1),
+        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        title: const Text(
+          'Meu Perfil',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           IconButton(
-            icon: Icon(_isEditing ? Icons.cancel : Icons.edit, color: Colors.white),
+            icon: Icon(
+              _isEditing ? Icons.cancel : Icons.edit,
+              color: Colors.white,
+            ),
             onPressed: () {
               setState(() {
                 _isEditing = !_isEditing;
@@ -126,8 +142,31 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
                 label: 'Nome da Empresa / Estabelecimento',
                 controller: _empresaController,
                 enabled: _isEditing,
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Informe o nome da empresa' : null,
+                validator: (v) => v == null || v.isEmpty
+                    ? 'Informe o nome da empresa'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _cnpjController,
+                inputFormatters: [cnpjMask],
+                enabled: _isEditing && !_cnpjBloqueado,
+                decoration: InputDecoration(
+                  labelText: 'CNPJ',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: _cnpjBloqueado
+                      ? const Icon(Icons.lock, color: Colors.grey)
+                      : null,
+                  filled: !_isEditing || _cnpjBloqueado,
+                  fillColor:
+                      !_isEditing || _cnpjBloqueado ? Colors.grey.shade100 : null,
+                ),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Informe o CNPJ';
+                  if (v.length < 18) return 'CNPJ incompleto';
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
 

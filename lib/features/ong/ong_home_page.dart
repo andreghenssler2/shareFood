@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ong_painel_page.dart';
+import 'ong_perfil_page.dart';
 
 class OngHomePage extends StatelessWidget {
   const OngHomePage({super.key});
@@ -51,8 +52,16 @@ class OngHomePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.person),
+              // title: const Text('Perfil da ONG'),
+              // leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Perfil da ONG'),
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const OngPerfilPage()),
+                );
+              },
             ),
 
             const Divider(),
