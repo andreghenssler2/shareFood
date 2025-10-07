@@ -25,7 +25,9 @@ class ParceiroHomePage extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Color.fromRGBO(185, 55, 43, 100)),
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(185, 55, 43, 100),
+              ),
               child: Text(
                 'ShareFood\nMenu do Parceiro',
                 style: TextStyle(
@@ -38,18 +40,18 @@ class ParceiroHomePage extends StatelessWidget {
 
             // 🔸 Itens do menu do parceiro
             ListTile(
-  leading: const Icon(Icons.add_box),
-  title: const Text('Criar Doação'),
-  onTap: () {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ParceiroCriarDoacaoPage(),
-      ),
-    );
-  },
-),
+              leading: const Icon(Icons.add_box),
+              title: const Text('Criar Doação'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ParceiroCriarDoacaoPage(),
+                  ),
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.inventory_2),
               title: const Text('Minhas Doações'),
@@ -70,7 +72,9 @@ class ParceiroHomePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ParceiroPerfilPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const ParceiroPerfilPage(),
+                  ),
                 );
               },
             ),
@@ -80,7 +84,7 @@ class ParceiroHomePage extends StatelessWidget {
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
               onTap: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushReplacementNamed(context, '/login');
               },
             ),
           ],

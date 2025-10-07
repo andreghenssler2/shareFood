@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'ong_painel_page.dart';
 import 'ong_perfil_page.dart';
 
@@ -80,7 +81,7 @@ class OngHomePage extends StatelessWidget {
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
               onTap: () {
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushReplacementNamed(context, '/login');
               },
             ),
           ],
