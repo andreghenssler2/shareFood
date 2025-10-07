@@ -61,10 +61,10 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(
-          "Erro ao fazer login"  ,
+          "Usuario ou senha inválidos",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: Text(message),
+        // content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

@@ -41,48 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBMs8eh9UUkXu7LQafYSBDIKQU9M_Y3bVU',
-    appId: '1:918856564159:web:0a7489aaac5b98a786350a',
-    messagingSenderId: '918856564159',
-    projectId: 'sharefood-cfe6f',
-    authDomain: 'sharefood-cfe6f.firebaseapp.com',
-    storageBucket: 'sharefood-cfe6f.firebasestorage.app',
-    measurementId: 'G-R9EBRVS1KT',
+    apiKey: 'AIzaSyDtZGr8WLl_PLnk7jBLsw6X4M0h-IkNDiQ',
+    appId: '1:935775560239:web:672ce1290ac9fdc9f6dcda',
+    messagingSenderId: '935775560239',
+    projectId: 'sharefoodfaccat',
+    authDomain: 'sharefoodfaccat.firebaseapp.com',
+    storageBucket: 'sharefoodfaccat.firebasestorage.app',
+    measurementId: 'G-MPMF8D9FR7',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB9qPRV3q2u1FvNiwBUE-R8yEulfemngHg',
-    appId: '1:918856564159:android:eb58d9e8b380749d86350a',
-    messagingSenderId: '918856564159',
-    projectId: 'sharefood-cfe6f',
-    storageBucket: 'sharefood-cfe6f.firebasestorage.app',
+    apiKey: 'AIzaSyAcekmNK9uNNmUJ4HjUAHFo_XWbevsfxMk',
+    appId: '1:935775560239:android:8acdb524c42829b3f6dcda',
+    messagingSenderId: '935775560239',
+    projectId: 'sharefoodfaccat',
+    storageBucket: 'sharefoodfaccat.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDlE8Ng1edm2DMT3asMm27x-ZtvEpv5f8Y',
-    appId: '1:918856564159:ios:4405e88921654c2886350a',
-    messagingSenderId: '918856564159',
-    projectId: 'sharefood-cfe6f',
-    storageBucket: 'sharefood-cfe6f.firebasestorage.app',
+    apiKey: 'AIzaSyAeFHwbtjpjHav8Beln6u1Dy0Nx8OvNdBQ',
+    appId: '1:935775560239:ios:b495edf36e8e3681f6dcda',
+    messagingSenderId: '935775560239',
+    projectId: 'sharefoodfaccat',
+    storageBucket: 'sharefoodfaccat.firebasestorage.app',
     iosBundleId: 'com.sharefood.sharefood',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDlE8Ng1edm2DMT3asMm27x-ZtvEpv5f8Y',
-    appId: '1:918856564159:ios:4405e88921654c2886350a',
-    messagingSenderId: '918856564159',
-    projectId: 'sharefood-cfe6f',
-    storageBucket: 'sharefood-cfe6f.firebasestorage.app',
+    apiKey: 'AIzaSyAeFHwbtjpjHav8Beln6u1Dy0Nx8OvNdBQ',
+    appId: '1:935775560239:ios:b495edf36e8e3681f6dcda',
+    messagingSenderId: '935775560239',
+    projectId: 'sharefoodfaccat',
+    storageBucket: 'sharefoodfaccat.firebasestorage.app',
     iosBundleId: 'com.sharefood.sharefood',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBMs8eh9UUkXu7LQafYSBDIKQU9M_Y3bVU',
-    appId: '1:918856564159:web:5f1ef2613d12a53a86350a',
-    messagingSenderId: '918856564159',
-    projectId: 'sharefood-cfe6f',
-    authDomain: 'sharefood-cfe6f.firebaseapp.com',
-    storageBucket: 'sharefood-cfe6f.firebasestorage.app',
-    measurementId: 'G-5CRYKET1B7',
+    apiKey: 'AIzaSyDtZGr8WLl_PLnk7jBLsw6X4M0h-IkNDiQ',
+    appId: '1:935775560239:web:58bc6edff4ae2de6f6dcda',
+    messagingSenderId: '935775560239',
+    projectId: 'sharefoodfaccat',
+    authDomain: 'sharefoodfaccat.firebaseapp.com',
+    storageBucket: 'sharefoodfaccat.firebasestorage.app',
+    measurementId: 'G-CLXGME3V5L',
   );
+
 }

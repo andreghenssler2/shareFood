@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'parceiro_painel_page.dart'; // tela principal do painel do parceiro
+// import 'parceiro_painel_page.dart'; // tela principal do painel do parceiro
 import '../home/home_page.dart'; // para voltar ao menu principal
+import 'parceiro_criar_doacao_page.dart'; // tela de criar doação
 
 class ParceiroHomePage extends StatelessWidget {
   const ParceiroHomePage({super.key});
@@ -9,7 +10,7 @@ class ParceiroHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Color.fromRGBO(158, 13, 0, 1),
         title: const Text(
           'Painel do Parceiro',
           style: TextStyle(color: Colors.white),
@@ -36,18 +37,18 @@ class ParceiroHomePage extends StatelessWidget {
 
             // 🔸 Itens do menu do parceiro
             ListTile(
-              leading: const Icon(Icons.add_box),
-              title: const Text('Criar Doação'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ParceiroPainelPage(),
-                  ),
-                );
-              },
-            ),
+  leading: const Icon(Icons.add_box),
+  title: const Text('Criar Doação'),
+  onTap: () {
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ParceiroCriarDoacaoPage(),
+      ),
+    );
+  },
+),
             ListTile(
               leading: const Icon(Icons.inventory_2),
               title: const Text('Minhas Doações'),
