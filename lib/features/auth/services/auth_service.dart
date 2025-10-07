@@ -1,33 +1,44 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  User? get currentUser => _auth.currentUser;
-
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
-
-  Future<User?> signIn(String email, String password) async {
-    final cred = await _auth.signInWithEmailAndPassword(
+  // 🔹 Criar conta
+  Future<User?> signUp(String email, String senha, String tipo) async {
+    final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
-      password: password,
+      password: senha,
     );
-    return cred.user;
+
+    final user = userCredential.user;
+    if (user != null) {
+      // 🔹 Salvar no Firestore o tipo de usuário
+      await _firestore.collection('users').doc(user.uid).set({
+        'email': email,
+        'tipo': tipo, // admin / ong / parceiro
+        'criadoEm': FieldValue.serverTimestamp(),
+      });
+    }
+
+    return user;
   }
 
-  Future<User?> register(String email, String password) async {
-    final cred = await _auth.createUserWithEmailAndPassword(
+  // 🔹 Login
+  Future<User?> signIn(String email, String senha) async {
+    final userCredential = await _auth.signInWithEmailAndPassword(
       email: email,
-      password: password,
+      password: senha,
     );
-    return cred.user;
+    return userCredential.user;
   }
 
-  Future<void> resetPassword(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
-  }
-
+  // 🔹 Logout
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  // 🔹 Usuário atual
+  User? get currentUser => _auth.currentUser;
 }

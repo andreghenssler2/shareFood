@@ -6,7 +6,7 @@ import 'core/theme/app_theme.dart';
 // Auth
 import 'features/auth/pages/login_page.dart';
 import 'features/auth/pages/register_page.dart';
-import 'features/auth/pages/reset_password_page.dart';
+// import 'features/auth/pages/reset_password_page.dart';
 
 // Home
 import 'features/home/home_page.dart';
@@ -17,6 +17,13 @@ import 'features/donations/create_donation_page.dart';
 
 // Profile
 import 'features/profile/profile_page.dart';
+
+// ONG Panel
+import 'features/ong/ong_painel_page.dart';
+
+// Partner Panel
+import 'features/parceiro/parceiro_painel_page.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,11 +44,13 @@ class ShareFoodApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
-        '/reset-password': (context) => const ResetPasswordPage(),
+        // '/reset-password': (context) => const ResetPasswordPage(),
         '/home': (context) => const HomePage(),
         '/my-donations': (context) => const MyDonationsPage(),
         '/create-donation': (context) => const CreateDonationPage(),
         '/profile': (context) => const ProfilePage(),
+        '/ong': (context) => const OngPainelPage(),
+        '/parceiro': (context) => const ParceiroPainelPage(),
       },
     );
   }

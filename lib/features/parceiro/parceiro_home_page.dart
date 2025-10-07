@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 // import 'parceiro_painel_page.dart'; // tela principal do painel do parceiro
-import '../home/home_page.dart'; // para voltar ao menu principal
+// import '../home/home_page.dart'; // para voltar ao menu principal
 import 'parceiro_criar_doacao_page.dart'; // tela de criar doação
+import 'parceiro_perfil_page.dart'; // tela de perfil do parceiro
 
 class ParceiroHomePage extends StatelessWidget {
   const ParceiroHomePage({super.key});
@@ -59,23 +60,17 @@ class ParceiroHomePage extends StatelessWidget {
               title: const Text('Histórico de Doações'),
               onTap: () {},
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Perfil do Parceiro'),
-              onTap: () {},
-            ),
 
             const Divider(),
 
-            // 🔙 Voltar para o menu principal (Home)
             ListTile(
-              leading: const Icon(Icons.arrow_back),
-              title: const Text('Voltar para o Menu Principal'),
+              leading: const Icon(Icons.person),
+              title: const Text('Meu Perfil'),
               onTap: () {
-                Navigator.pop(context); // fecha o Drawer
-                Navigator.pushReplacement(
+                Navigator.pop(context);
+                Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const HomePage()),
+                  MaterialPageRoute(builder: (context) => const ParceiroPerfilPage()),
                 );
               },
             ),
