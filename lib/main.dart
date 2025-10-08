@@ -23,6 +23,8 @@ import 'features/ong/ong_painel_page.dart';
 
 // Partner Panel
 import 'features/parceiro/parceiro_painel_page.dart';
+import 'features/parceiro/parceiro_criar_doacao_page.dart';
+// import 'features/parceiro/doacoes_parceiro_page.dart';
 
 
 void main() async {
@@ -51,6 +53,7 @@ class ShareFoodApp extends StatelessWidget {
         '/profile': (context) => const ProfilePage(),
         '/ong': (context) => const OngPainelPage(),
         '/parceiro': (context) => const ParceiroPainelPage(),
+        '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
       },
     );
   }
