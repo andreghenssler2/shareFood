@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'parceiro_painel_page.dart'; // tela principal do painel do parceiro
 // import '../home/home_page.dart'; // para voltar ao menu principal
 import 'parceiro_criar_doacao_page.dart'; // tela de criar doação
-import 'doacoes_parceiro_page.dart';
+// import 'doacoes_parceiro_page.dart';
 import 'parceiro_perfil_page.dart'; // tela de perfil do parceiro
 // import 'parceiro_doacoes_page.dart'; // tela de listar doações do parceiro
 
@@ -58,10 +58,10 @@ class ParceiroHomePage extends StatelessWidget {
               leading: const Icon(Icons.inventory_2),
               title: const Text('Minhas Doações'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const DoacoesParceiroPage()),
-                );
+                // Navigator.push(
+                //   context,
+                //   // MaterialPageRoute(builder: (context) => const DoacoesParceiroPage()),
+                // );
               },
             ),
             ListTile(
