@@ -5,22 +5,37 @@ import 'package:firebase_auth/firebase_auth.dart';
 class DoacoesParceiroPage extends StatelessWidget {
   const DoacoesParceiroPage({super.key});
 
-  // Stream das doações do parceiro logado
   Stream<QuerySnapshot> _streamDoacoes() {
     final uid = FirebaseAuth.instance.currentUser?.uid;
+
     return FirebaseFirestore.instance
         .collection('doacoes')
-        .where('parceiroId', isEqualTo: uid) // filtra pelo parceiro logado
-        .orderBy('criadoEm', descending: true) // nome do campo no Firestore
+        .where('parceiroId', isEqualTo: uid)
+        .orderBy('criadoEm', descending: true)
         .snapshots();
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'disponível':
+        return Colors.green;
+      case 'reservado':
+        return Colors.orange;
+      case 'entregue':
+        return Colors.grey;
+      default:
+        return Colors.blueGrey;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F8F8),
       appBar: AppBar(
         title: const Text('Minhas Doações'),
         backgroundColor: Colors.orange,
+        centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _streamDoacoes(),
@@ -33,7 +48,7 @@ class DoacoesParceiroPage extends StatelessWidget {
             return const Center(
               child: Text(
                 'Nenhuma doação cadastrada ainda.',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
             );
           }
@@ -41,36 +56,63 @@ class DoacoesParceiroPage extends StatelessWidget {
           final docs = snapshot.data!.docs;
 
           return ListView.builder(
+            padding: const EdgeInsets.all(12),
             itemCount: docs.length,
             itemBuilder: (context, index) {
               final doacao = docs[index].data() as Map<String, dynamic>;
 
               final titulo = doacao['titulo'] ?? 'Sem título';
               final descricao = doacao['descricao'] ?? '';
-              final marca = doacao['marca'] ?? '';
-              final quantidade = doacao['quantidade']?.toString() ?? '';
+              final quantidade = doacao['quantidade']?.toString() ?? '0';
               final unidade = doacao['unidade'] ?? '';
               final validade = doacao['validade'] ?? '';
-              final criadoEm = (doacao['criadoEm'] as Timestamp?)?.toDate();
+              final status = doacao['status'] ?? 'Disponível';
+              final marca = doacao['marca'] ?? '';
+
+              final statusColor = _getStatusColor(status);
 
               return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                elevation: 2,
+                elevation: 3,
+                margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  leading: const Icon(Icons.fastfood, color: Colors.orange),
+                  leading: CircleAvatar(
+                    backgroundColor: Colors.orange.shade100,
+                    child: const Icon(Icons.fastfood, color: Colors.orange),
+                  ),
                   title: Text(
                     titulo,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
-                  subtitle: Text(
-                    'Marca: $marca\n'
-                    'Quantidade: $quantidade $unidade\n'
-                    'Validade: $validade\n'
-                    'Descrição: $descricao\n'
-                    '${criadoEm != null ? 'Criado em: ${criadoEm.day}/${criadoEm.month}/${criadoEm.year}' : ''}',
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      'Descrição: $descricao\n'
+                      'Marca: $marca\n'
+                      'Quantidade: $quantidade $unidade\n'
+                      'Validade: $validade',
+                      style: const TextStyle(fontSize: 13, color: Colors.black87),
+                    ),
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.circle, color: statusColor, size: 12),
+                      const SizedBox(height: 4),
+                      Text(
+                        status,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               );
