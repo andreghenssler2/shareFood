@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // 🔥 Import necessário para o Firestore
-import 'package:firebase_auth/firebase_auth.dart'; // 🔥 Import necessário para o Firebase Auth
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ParceiroCriarDoacaoPage extends StatefulWidget {
   const ParceiroCriarDoacaoPage({super.key});
@@ -33,10 +33,22 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
 
   Future<void> _criarDoacao() async {
     if (!_formKey.currentState!.validate()) return;
-    final user = FirebaseAuth.instance.currentUser; // ✅ Pega o usuário logado
+
+    final user = FirebaseAuth.instance.currentUser;
+
+    // 🔎 Verificação de autenticação
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro: usuário não autenticado!')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
+      print('🔎 UID do parceiro logado: ${user.uid}');
+
       await FirebaseFirestore.instance.collection('doacoes').add({
         'titulo': _tituloController.text.trim(),
         'descricao': _descricaoController.text.trim(),
@@ -45,7 +57,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
         'marca': _marcaController.text.trim(),
         'validade': _validadeController.text.trim(),
         'criadoEm': FieldValue.serverTimestamp(),
-        'parceiroId': user!.uid, // 🔥 salva quem fez a doação
+        'parceiroId': user.uid, // ✅ garante vinculação correta
       });
 
       if (mounted) {
