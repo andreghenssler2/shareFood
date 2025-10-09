@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'parceiro_ong_detalhes_page.dart';
 
 class OngListPage extends StatefulWidget {
   final String parceiroCidade;
@@ -25,7 +24,7 @@ class _OngListPageState extends State<OngListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ONGs Cadastradas'),
+        title: const Text('ONGs Cadastradas',style: TextStyle(color: Colors.white),),
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
       ),
       body: Column(
@@ -86,15 +85,20 @@ class _OngListPageState extends State<OngListPage> {
 
                 final docs = snapshot.data!.docs;
 
+                // 🔹 Filtro
                 final filtered = docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
+
                   final nome = (data['nome'] ?? '').toString().toLowerCase();
+
+                  // endereço dentro de um mapa
                   final endereco = data['endereco'] ?? {};
-                  final cidade = (endereco['cidade'] ?? '').toString().toLowerCase();
+                  final cidade =
+                      (endereco['cidade'] ?? '').toString().toLowerCase();
                   final uf = (endereco['uf'] ?? '').toString();
 
-                  final matchesSearch =
-                      searchQuery.isEmpty || nome.contains(searchQuery.toLowerCase());
+                  final matchesSearch = searchQuery.isEmpty ||
+                      nome.contains(searchQuery.toLowerCase());
                   final matchesUF = selectedUF == null || uf == selectedUF;
                   final matchesCidade = selectedCidade == null ||
                       cidade.contains(selectedCidade!.toLowerCase());
@@ -102,13 +106,16 @@ class _OngListPageState extends State<OngListPage> {
                   return matchesSearch && matchesUF && matchesCidade;
                 }).toList();
 
+                // 🔝 Prioriza ONGs da mesma cidade do parceiro
                 filtered.sort((a, b) {
                   final dataA = a.data() as Map<String, dynamic>;
                   final dataB = b.data() as Map<String, dynamic>;
                   final endA = dataA['endereco'] ?? {};
                   final endB = dataB['endereco'] ?? {};
+
                   final cidadeA = (endA['cidade'] ?? '').toString();
                   final cidadeB = (endB['cidade'] ?? '').toString();
+
                   if (cidadeA == widget.parceiroCidade &&
                       cidadeB != widget.parceiroCidade) return -1;
                   if (cidadeB == widget.parceiroCidade &&
@@ -122,6 +129,7 @@ class _OngListPageState extends State<OngListPage> {
                   );
                 }
 
+                // 📋 Monta a lista
                 return ListView.builder(
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
@@ -134,24 +142,16 @@ class _OngListPageState extends State<OngListPage> {
                     final email = data['email'] ?? '';
 
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       child: ListTile(
                         title: Text(
                           nome,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text('$cidade - $uf\n$email'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OngDetalhesPage(
-                                ongData: data,
-                              ),
-                            ),
-                          );
-                        },
+                        trailing:
+                            const Icon(Icons.arrow_forward_ios, size: 18),
                       ),
                     );
                   },
