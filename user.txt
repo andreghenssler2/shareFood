@@ -9,3 +9,7 @@ andrehenssler1@gmail.com
 Parceiro
 andrehenssler3@gmail.com
 123456
+
+git add .
+git commit -m "first commit"
+git push -u origin main

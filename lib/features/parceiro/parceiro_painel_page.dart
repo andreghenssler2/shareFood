@@ -12,6 +12,7 @@ class ParceiroPainelPage extends StatelessWidget {
           'Criar Doação',
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: const Center(

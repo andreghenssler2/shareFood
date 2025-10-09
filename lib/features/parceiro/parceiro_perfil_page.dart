@@ -109,6 +109,7 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
           'Meu Perfil',
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(

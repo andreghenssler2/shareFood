@@ -6,12 +6,12 @@ class ParceiroCriarDoacaoPage extends StatefulWidget {
   const ParceiroCriarDoacaoPage({super.key});
 
   @override
-  State<ParceiroCriarDoacaoPage> createState() => _ParceiroCriarDoacaoPageState();
+  State<ParceiroCriarDoacaoPage> createState() =>
+      _ParceiroCriarDoacaoPageState();
 }
 
 class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   final TextEditingController _quantidadeController = TextEditingController();
@@ -36,7 +36,6 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
 
     final user = FirebaseAuth.instance.currentUser;
 
-    // 🔎 Verificação de autenticação
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro: usuário não autenticado!')),
@@ -47,8 +46,6 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
     setState(() => _isLoading = true);
 
     try {
-      print('🔎 UID do parceiro logado: ${user.uid}');
-
       await FirebaseFirestore.instance.collection('doacoes').add({
         'titulo': _tituloController.text.trim(),
         'descricao': _descricaoController.text.trim(),
@@ -57,7 +54,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
         'marca': _marcaController.text.trim(),
         'validade': _validadeController.text.trim(),
         'criadoEm': FieldValue.serverTimestamp(),
-        'parceiroId': user.uid, // ✅ garante vinculação correta
+        'parceiroId': user.uid,
       });
 
       if (mounted) {
@@ -84,6 +81,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -96,7 +94,6 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 20),
@@ -121,8 +118,9 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe a descrição' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Informe a descrição'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -134,8 +132,9 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                   labelText: 'Quantidade',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe a quantidade' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Informe a quantidade'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -155,7 +154,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                   _unidadeSelecionada = value;
                 }),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Selecione a unidade' : null,
+                    value == null ? 'Selecione a unidade' : null,
               ),
               const SizedBox(height: 16),
 

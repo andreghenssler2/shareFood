@@ -11,19 +11,6 @@ class DoacoesParceiroPage extends StatelessWidget {
     return validade.isBefore(hoje.add(Duration(days: days)));
   }
 
-  Future<String> _getParceiroNome(String uid) async {
-    try {
-      final doc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      if (doc.exists && doc.data()!.containsKey('nome')) {
-        return doc['nome'];
-      }
-      return 'Parceiro';
-    } catch (e) {
-      return 'Parceiro';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -41,7 +28,7 @@ class DoacoesParceiroPage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromRGBO(185, 55, 43, 100),
+        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
       ),
       body: Column(
         children: [
@@ -59,8 +46,10 @@ class DoacoesParceiroPage extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                 ),
                 child: const Text(
                   'Cadastrar Produto',
@@ -105,7 +94,6 @@ class DoacoesParceiroPage extends StatelessWidget {
                     final quantidade = data['quantidade']?.toString() ?? '';
                     final unidade = data['unidade'] ?? '';
                     final validadeStr = data['validade'] ?? '';
-                    final parceiroId = data['parceiroId'] ?? '';
                     final imagemUrl = data['imagem'] ?? '';
 
                     // Converter validade
@@ -122,108 +110,92 @@ class DoacoesParceiroPage extends StatelessWidget {
                       alertaVermelho = _isNearExpiration(validade, 7);
                     }
 
-                    return FutureBuilder<String>(
-                      future: _getParceiroNome(parceiroId),
-                      builder: (context, parceiroSnapshot) {
-                        final parceiroNome =
-                            parceiroSnapshot.data ?? 'Parceiro';
-
-                        return Stack(
-                          children: [
-                            Card(
-                              color: const Color(0xFFB2F0DC),
-                              margin: const EdgeInsets.symmetric(vertical: 6),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              elevation: 3,
-                              child: ListTile(
-                                leading: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: imagemUrl.isNotEmpty
-                                      ? Image.network(
-                                          imagemUrl,
-                                          width: 60,
-                                          height: 60,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Container(
-                                          width: 60,
-                                          height: 60,
-                                          color: Colors.grey[300],
-                                          child: const Icon(Icons.image,
-                                              color: Colors.grey),
-                                        ),
-                                ),
-                                title: Text(
-                                  titulo,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // 🔹 Quantidade e Validade na mesma linha
-                                      Row(
-                                        children: [
-                                          const Text(
-                                            "Quantidade: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text("$quantidade $unidade"),
-                                          const SizedBox(width: 16),
-                                          const Text(
-                                            "Validade: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(validadeStr),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      // 🔹 Nome do parceiro
-                                      Row(
-                                        children: [
-                                          const Text(
-                                            "Parceiro: ",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(parceiroNome),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                    return Stack(
+                      children: [
+                        Card(
+                          color: const Color(0xFFB2F0DC),
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          elevation: 3,
+                          child: ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: imagemUrl.isNotEmpty
+                                  ? Image.network(
+                                      imagemUrl,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Container(
+                                      width: 60,
+                                      height: 60,
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.image,
+                                          color: Colors.grey),
+                                    ),
+                            ),
+                            title: Text(
+                              titulo,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-
-                            // 🔶 Alerta amarelo (≤15 dias)
-                            if (alertaAmarelo && !alertaVermelho)
-                              Positioned(
-                                top: 6,
-                                right: 6,
-                                child: Icon(Icons.warning_amber_rounded,
-                                    color: Colors.amber[700], size: 28),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      children: [
+                                        const Text(
+                                          "Quantidade: ",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text("$quantidade $unidade"),
+                                      ],
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "Validade: ",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(validadeStr),
+                                    ],
+                                  ),
+                                ],
                               ),
+                            ),
+                          ),
+                        ),
 
-                            // 🔴 Alerta vermelho (≤7 dias)
-                            if (alertaVermelho)
-                              const Positioned(
-                                top: 6,
-                                right: 6,
-                                child: Icon(Icons.error,
-                                    color: Colors.red, size: 28),
-                              ),
-                          ],
-                        );
-                      },
+                        // 🔶 Alerta amarelo (≤15 dias)
+                        if (alertaAmarelo && !alertaVermelho)
+                          Positioned(
+                            top: 6,
+                            right: 6,
+                            child: Icon(Icons.warning_amber_rounded,
+                                color: Colors.amber[700], size: 28),
+                          ),
+
+                        // 🔴 Alerta vermelho (≤7 dias)
+                        if (alertaVermelho)
+                          const Positioned(
+                            top: 6,
+                            right: 6,
+                            child:
+                                Icon(Icons.error, color: Colors.red, size: 28),
+                          ),
+                      ],
                     );
                   },
                 );
