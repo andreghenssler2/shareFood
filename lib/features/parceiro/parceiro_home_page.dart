@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:intl/intl.dart';
 import 'parceiro_criar_doacao_page.dart';
 import 'doacoes_parceiro_page.dart';
 import 'parceiro_perfil_page.dart';
@@ -9,9 +9,10 @@ import 'parceiro_ongs_page.dart'; // ✅ tela de listagem de ONGs
 
 class ParceiroHomePage extends StatelessWidget {
   const ParceiroHomePage({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser; // <-- ADICIONE ESTA LINHA
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
@@ -41,7 +42,18 @@ class ParceiroHomePage extends StatelessWidget {
                 ),
               ),
             ),
-
+             // 🏠 Home
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context); // Fecha o menu
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ParceiroHomePage()),
+                );
+              },
+            ),
             // 🟩 Criar Doação
             ListTile(
               leading: const Icon(Icons.add_box),
@@ -167,12 +179,117 @@ class ParceiroHomePage extends StatelessWidget {
       ),
 
       // 🔸 Corpo principal
-      body: const Center(
-        child: Text(
-          'Bem-vindo ao Painel do Parceiro 🏪',
-          style: TextStyle(fontSize: 18),
+      // body: const Center(
+      //   child: Text(
+      //     'Bem-vindo ao Painel do Parceiro 🏪',
+      //     style: TextStyle(fontSize: 18),
+      //   ),
+      // ),
+      body: user == null
+    ? const Center(
+        child: Text('Usuário não autenticado.'),
+      )
+    : Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('doacoes')
+              .where('parceiroId', isEqualTo: user.uid)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Nenhuma doação próxima do vencimento.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              );
+            }
+
+            final doacoes = snapshot.data!.docs;
+            final proximasDoacoes = <Map<String, dynamic>>[];
+
+            for (var doc in doacoes) {
+              final data = doc.data() as Map<String, dynamic>;
+              final titulo = data['titulo'] ?? 'Sem nome';
+              final validadeStr = data['validade'] ?? '';
+
+              try {
+                final validade = DateFormat("dd/MM/yyyy").parse(validadeStr);
+                final hoje = DateTime.now();
+                final diffDays = validade.difference(hoje).inDays;
+
+                if (diffDays <= 15) {
+                  proximasDoacoes.add({
+                    'titulo': titulo,
+                    'validade': validadeStr,
+                    'dias': diffDays,
+                  });
+                }
+              } catch (_) {
+                // ignora datas inválidas
+              }
+            }
+
+            if (proximasDoacoes.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Nenhuma doação próxima do vencimento.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              );
+            }
+
+            proximasDoacoes.sort((a, b) => a['dias'].compareTo(b['dias']));
+
+            return ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: proximasDoacoes.length,
+              itemBuilder: (context, index) {
+                final item = proximasDoacoes[index];
+                final titulo = item['titulo'];
+                final validade = item['validade'];
+                final dias = item['dias'];
+
+                IconData icon;
+                Color iconColor;
+
+                if (dias <= 7) {
+                  icon = Icons.error_outline;
+                  iconColor = Colors.red;
+                } else {
+                  icon = Icons.warning_amber_rounded;
+                  iconColor = Colors.orange;
+                }
+
+                return Card(
+                  color: const Color(0xFFF8F8F8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    leading: Icon(icon, color: iconColor, size: 30),
+                    title: Text(
+                      titulo,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Validade: $validade\nRestam: ${dias < 0 ? 0 : dias} dias',
+                    ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
+
     );
   }
 }

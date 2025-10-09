@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'parceiro_ong_detalhes_page.dart';
 
 class OngListPage extends StatefulWidget {
   final String parceiroCidade;
@@ -21,10 +22,19 @@ class _OngListPageState extends State<OngListPage> {
   String? selectedCidade;
 
   @override
+  void initState() {
+    super.initState();
+    selectedUF = widget.parceiroUF; // mantém a UF padrão
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ONGs Cadastradas',style: TextStyle(color: Colors.white),),
+        title: const Text(
+          'ONGs Cadastradas',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
       ),
       body: Column(
@@ -40,32 +50,40 @@ class _OngListPageState extends State<OngListPage> {
                     labelText: 'Pesquisar ONG pelo nome',
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: (value) => setState(() => searchQuery = value),
+                  onChanged: (value) {
+                    setState(() => searchQuery = value.toLowerCase());
+                  },
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
+                        decoration: const InputDecoration(
+                          labelText: 'UF',
+                          border: OutlineInputBorder(),
+                        ),
                         value: selectedUF,
-                        hint: const Text('Filtrar por UF'),
-                        items: ['RS', 'SC', 'PR']
-                            .map((uf) => DropdownMenuItem(
-                                  value: uf,
-                                  child: Text(uf),
-                                ))
-                            .toList(),
-                        onChanged: (value) => setState(() => selectedUF = value),
+                        items: const [
+                          DropdownMenuItem(value: 'RS', child: Text('RS')),
+                          DropdownMenuItem(value: 'SC', child: Text('SC')),
+                          DropdownMenuItem(value: 'PR', child: Text('PR')),
+                        ],
+                        onChanged: (value) {
+                          setState(() => selectedUF = value);
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: TextField(
+                      child: TextFormField(
                         decoration: const InputDecoration(
                           labelText: 'Cidade',
                           border: OutlineInputBorder(),
                         ),
-                        onChanged: (value) => setState(() => selectedCidade = value),
+                        onChanged: (value) {
+                          setState(() => selectedCidade = value);
+                        },
                       ),
                     ),
                   ],
@@ -79,79 +97,60 @@ class _OngListPageState extends State<OngListPage> {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('ongs').snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Erro ao carregar ONGs'));
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final docs = snapshot.data!.docs;
-
-                // 🔹 Filtro
-                final filtered = docs.where((doc) {
+                final ongs = snapshot.data!.docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
-
-                  final nome = (data['nome'] ?? '').toString().toLowerCase();
-
-                  // endereço dentro de um mapa
                   final endereco = data['endereco'] ?? {};
-                  final cidade =
-                      (endereco['cidade'] ?? '').toString().toLowerCase();
-                  final uf = (endereco['uf'] ?? '').toString();
+                  final nome = (data['nome'] ?? '').toString().toLowerCase();
+                  final cidade = (endereco['cidade'] ?? '').toString().toLowerCase();
+                  final uf = (endereco['uf'] ?? '').toString().toUpperCase();
 
-                  final matchesSearch = searchQuery.isEmpty ||
-                      nome.contains(searchQuery.toLowerCase());
-                  final matchesUF = selectedUF == null || uf == selectedUF;
+                  final matchesSearch = nome.contains(searchQuery);
                   final matchesCidade = selectedCidade == null ||
+                      selectedCidade!.isEmpty ||
                       cidade.contains(selectedCidade!.toLowerCase());
+                  final matchesUF =
+                      selectedUF == null || uf == selectedUF!.toUpperCase();
 
-                  return matchesSearch && matchesUF && matchesCidade;
+                  return matchesSearch && matchesCidade && matchesUF;
                 }).toList();
 
-                // 🔝 Prioriza ONGs da mesma cidade do parceiro
-                filtered.sort((a, b) {
-                  final dataA = a.data() as Map<String, dynamic>;
-                  final dataB = b.data() as Map<String, dynamic>;
-                  final endA = dataA['endereco'] ?? {};
-                  final endB = dataB['endereco'] ?? {};
-
-                  final cidadeA = (endA['cidade'] ?? '').toString();
-                  final cidadeB = (endB['cidade'] ?? '').toString();
-
-                  if (cidadeA == widget.parceiroCidade &&
-                      cidadeB != widget.parceiroCidade) return -1;
-                  if (cidadeB == widget.parceiroCidade &&
-                      cidadeA != widget.parceiroCidade) return 1;
-                  return cidadeA.compareTo(cidadeB);
-                });
-
-                if (filtered.isEmpty) {
-                  return const Center(
-                    child: Text('Nenhuma ONG encontrada.'),
-                  );
+                if (ongs.isEmpty) {
+                  return const Center(child: Text('Nenhuma ONG encontrada.'));
                 }
 
-                // 📋 Monta a lista
                 return ListView.builder(
-                  itemCount: filtered.length,
+                  itemCount: ongs.length,
                   itemBuilder: (context, index) {
-                    final data = filtered[index].data() as Map<String, dynamic>;
+                    final document = ongs[index];
+                    final data = document.data() as Map<String, dynamic>;
                     final endereco = data['endereco'] ?? {};
 
-                    final nome = data['nome'] ?? 'ONG sem nome';
-                    final cidade = endereco['cidade'] ?? '';
-                    final uf = endereco['uf'] ?? '';
-                    final email = data['email'] ?? '';
-
                     return Card(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                      margin:
+                          const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       child: ListTile(
-                        title: Text(
-                          nome,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text('$cidade - $uf\n$email'),
-                        trailing:
-                            const Icon(Icons.arrow_forward_ios, size: 18),
+                        title: Text(data['nome'] ?? 'Sem nome'),
+                        subtitle: Text(
+                            '${endereco['cidade'] ?? ''} - ${endereco['uf'] ?? ''}'),
+                        trailing: const Icon(Icons.arrow_forward_ios,
+                            color: Colors.grey),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  OngDetalhesPage(ongId: document.id),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },

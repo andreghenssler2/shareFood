@@ -38,7 +38,8 @@ dependencies:
   google_maps_flutter: ^2.6.1
   geocoding: ^3.0.0
 
-
+  # Ícones
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
