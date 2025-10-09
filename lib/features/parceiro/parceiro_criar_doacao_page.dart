@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 
 class ParceiroCriarDoacaoPage extends StatefulWidget {
   const ParceiroCriarDoacaoPage({super.key});
@@ -20,6 +21,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
 
   String? _unidadeSelecionada;
   bool _isLoading = false;
+  DateTime? _validadeSelecionada;
 
   @override
   void dispose() {
@@ -170,7 +172,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🟩 Validade
+              // 🟩 Validade (mínimo 30 dias)
               TextFormField(
                 controller: _validadeController,
                 readOnly: true,
@@ -180,19 +182,35 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
                 onTap: () async {
+                  final hoje = DateTime.now();
                   final DateTime? date = await showDatePicker(
                     context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2023),
+                    initialDate: hoje.add(const Duration(days: 31)),
+                    firstDate: hoje.add(const Duration(days: 31)), // 🔹 mínimo 30 dias depois de hoje
                     lastDate: DateTime(2100),
                   );
+
                   if (date != null) {
-                    _validadeController.text =
-                        '${date.day}/${date.month}/${date.year}';
+                    setState(() {
+                      _validadeSelecionada = date;
+                      _validadeController.text =
+                          DateFormat('dd/MM/yyyy').format(date);
+                    });
                   }
                 },
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Informe a validade' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Informe a validade';
+                  }
+                  if (_validadeSelecionada != null) {
+                    final hoje = DateTime.now();
+                    final diff = _validadeSelecionada!.difference(hoje).inDays;
+                    if (diff <= 20) {
+                      return 'A validade deve ser superior a 20 dias';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 30),
 

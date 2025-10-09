@@ -82,25 +82,43 @@ class DoacoesParceiroPage extends StatelessWidget {
                   );
                 }
 
-                final doacoes = snapshot.data!.docs;
+                final docs = snapshot.data!.docs;
+
+                // 🔸 Converter e ordenar por validade
+                final doacoes = docs.map((doc) {
+                  final data = doc.data() as Map<String, dynamic>;
+                  DateTime? validade;
+                  try {
+                    validade = DateFormat("dd/MM/yyyy")
+                        .parse(data['validade'] ?? '');
+                  } catch (_) {}
+                  return {
+                    'id': doc.id,
+                    ...data,
+                    'validadeDate': validade,
+                  };
+                }).toList();
+
+                doacoes.sort((a, b) {
+                  final va = a['validadeDate'];
+                  final vb = b['validadeDate'];
+                  if (va == null && vb == null) return 0;
+                  if (va == null) return 1;
+                  if (vb == null) return -1;
+                  return va.compareTo(vb);
+                });
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(10),
                   itemCount: doacoes.length,
                   itemBuilder: (context, index) {
-                    final data = doacoes[index].data() as Map<String, dynamic>;
-
+                    final data = doacoes[index];
                     final titulo = data['titulo'] ?? '';
                     final quantidade = data['quantidade']?.toString() ?? '';
                     final unidade = data['unidade'] ?? '';
                     final validadeStr = data['validade'] ?? '';
                     final imagemUrl = data['imagem'] ?? '';
-
-                    // Converter validade
-                    DateTime? validade;
-                    try {
-                      validade = DateFormat("dd/MM/yyyy").parse(validadeStr);
-                    } catch (_) {}
+                    final validade = data['validadeDate'];
 
                     // Verificar alertas
                     bool alertaAmarelo = false;
