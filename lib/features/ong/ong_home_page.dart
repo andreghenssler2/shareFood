@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'ong_painel_page.dart';
 import 'ong_perfil_page.dart';
 import 'ong_doacoes_page.dart';
+import 'ong_carrinho_page.dart';
+import 'ong_doacoes_recebidas_page.dart';
 
 class OngHomePage extends StatelessWidget {
   const OngHomePage({super.key});
@@ -50,6 +52,19 @@ class OngHomePage extends StatelessWidget {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.shopping_cart),
+              title: const Text('Carrinho'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OngCarrinhoPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.check_circle),
               title: const Text('Doações Recebidas'),
               onTap: () {
@@ -57,7 +72,7 @@ class OngHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const OngDoacoesPage(),
+                    builder: (context) => const OngDoacoesRecebidasPage(),
                   ),
                 );
               },
