@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:image_picker/image_picker.dart';
+// import 'dart:io';
+// import 'package:firebase_storage/firebase_storage.dart';
 
 class EditarDoacaoPage extends StatefulWidget {
   final Map<String, dynamic> doacao;
@@ -24,7 +24,7 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
 
   String _unidadeSelecionada = 'Kg';
   bool _ativo = true;
-  File? _imagemSelecionada;
+  // File? _imagemSelecionada;
   bool _salvando = false;
 
   final unidades = ['Kg', 'Litros', 'Unidade'];
@@ -41,22 +41,6 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
     _ativo = data['ativo'] ?? true;
   }
 
-  Future<void> _selecionarImagem() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _imagemSelecionada = File(picked.path);
-      });
-    }
-  }
-
-  Future<String?> _uploadImagem(String id) async {
-    if (_imagemSelecionada == null) return widget.doacao['imagem'];
-    final ref = FirebaseStorage.instance.ref().child('doacoes/$id.jpg');
-    await ref.putFile(_imagemSelecionada!);
-    return await ref.getDownloadURL();
-  }
 
   Future<void> _salvarAlteracoes() async {
     if (!_formKey.currentState!.validate()) return;
@@ -64,7 +48,7 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
 
     try {
       final docId = widget.doacao['id'];
-      final imagemUrl = await _uploadImagem(docId);
+      final imagemUrl = '';
 
       await FirebaseFirestore.instance.collection('doacoes').doc(docId).update({
         'titulo': _tituloController.text.trim(),
@@ -94,7 +78,7 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final imagemUrl = widget.doacao['imagem'];
+    // final imagemUrl = widget.doacao['imagem'];
 
     return Scaffold(
       appBar: AppBar(

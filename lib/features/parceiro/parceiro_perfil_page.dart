@@ -219,11 +219,15 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
               if (_isEditing)
                 ElevatedButton.icon(
                   onPressed: _salvarPerfil,
-                  icon: const Icon(Icons.save),
+                  icon: const Icon(Icons.save,color: Colors.white),
+
                   label: const Text('Salvar Alterações'),
+
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
+                    
                   ),
                 ),
 
