@@ -10,7 +10,11 @@ Parceiro
 andrehenssler3@gmail.com
 123456
 
+
+
 git add .
 git commit -m "Parceiro Lista ONG e Ver Detalhes Ong"
 
 git push -u origin main
+
+flutter build apk --release
