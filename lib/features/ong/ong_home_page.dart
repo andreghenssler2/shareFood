@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
-import 'ong_painel_page.dart';
+// import 'ong_painel_page.dart';
 import 'ong_perfil_page.dart';
 import 'ong_doacoes_page.dart';
-import 'ong_carrinho_page.dart';
+// import 'ong_carrinho_page.dart';
 import 'ong_doacoes_recebidas_page.dart';
 
 class OngHomePage extends StatelessWidget {
@@ -59,7 +59,7 @@ class OngHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OngCarrinhoPage(),
+                    builder: (context) => OngDoacoesPage(),
                   ),
                 );
               },

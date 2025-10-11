@@ -27,6 +27,8 @@ import 'features/ong/ong_carrinho_page.dart';
 import 'features/parceiro/parceiro_painel_page.dart';
 import 'features/parceiro/parceiro_criar_doacao_page.dart';
 import 'features/parceiro/editar_doacao_page.dart';
+import 'features/parceiro/historico_doacoes_page.dart';
+import 'features/parceiro/historico_pedidos_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +61,12 @@ class ShareFoodApp extends StatelessWidget {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return EditarDoacaoPage(doacao: args);
         },
-        '/ong_carrinho_page': (context) => const OngCarrinhoPage(),
+        'ong_carrinho_page': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as List<Map<String, dynamic>>;
+          return OngCarrinhoPage(itensCarrinho: args);
+        },
+        '/historicoDoacoes': (context) => const HistoricoPedidosPage(),
       },
 
       // ✅ Necessário para funcionar o DatePicker e textos localizados

@@ -6,6 +6,7 @@ import 'parceiro_criar_doacao_page.dart';
 import 'doacoes_parceiro_page.dart';
 import 'parceiro_perfil_page.dart';
 import 'parceiro_ongs_page.dart'; // ✅ tela de listagem de ONGs
+import 'historico_pedidos_page.dart'; // ✅ tela de histórico de pedidos
 
 class ParceiroHomePage extends StatelessWidget {
   const ParceiroHomePage({super.key});
@@ -146,7 +147,12 @@ class ParceiroHomePage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.history),
               title: const Text('Histórico de Doações'),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HistoricoPedidosPage()),
+                );
+              },
             ),
 
             const Divider(),

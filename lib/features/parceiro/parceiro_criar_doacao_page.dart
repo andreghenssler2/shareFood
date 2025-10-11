@@ -57,6 +57,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
         'validade': _validadeController.text.trim(),
         'criadoEm': FieldValue.serverTimestamp(),
         'parceiroId': user.uid,
+        'ativo': true,
       });
 
       if (mounted) {
