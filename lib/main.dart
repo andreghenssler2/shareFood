@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // ✅ Import necessário
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 
@@ -20,14 +21,12 @@ import 'features/profile/profile_page.dart';
 
 // ONG Panel
 import 'features/ong/ong_painel_page.dart';
+import 'features/ong/ong_carrinho_page.dart';
 
 // Partner Panel
 import 'features/parceiro/parceiro_painel_page.dart';
 import 'features/parceiro/parceiro_criar_doacao_page.dart';
-// import 'features/parceiro/parceiro_editar_doacao_page.dart';
 import 'features/parceiro/editar_doacao_page.dart';
-import 'features/ong/ong_carrinho_page.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,13 +55,22 @@ class ShareFoodApp extends StatelessWidget {
         '/ong': (context) => const OngPainelPage(),
         '/parceiro': (context) => const ParceiroPainelPage(),
         '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
-        // '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
         '/editarDoacao': (context) {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return EditarDoacaoPage(doacao: args);
         },
         '/ong_carrinho_page': (context) => const OngCarrinhoPage(),
       },
+
+      // ✅ Necessário para funcionar o DatePicker e textos localizados
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'), // 🇧🇷 Português Brasil
+      ],
     );
   }
 }
