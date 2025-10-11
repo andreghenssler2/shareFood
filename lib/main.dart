@@ -26,7 +26,7 @@ import 'features/parceiro/parceiro_painel_page.dart';
 import 'features/parceiro/parceiro_criar_doacao_page.dart';
 // import 'features/parceiro/parceiro_editar_doacao_page.dart';
 import 'features/parceiro/editar_doacao_page.dart';
-
+import 'features/ong/ong_carrinho_page.dart';
 
 
 void main() async {
@@ -61,6 +61,7 @@ class ShareFoodApp extends StatelessWidget {
           final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
           return EditarDoacaoPage(doacao: args);
         },
+        '/ong_carrinho_page': (context) => const OngCarrinhoPage(),
       },
     );
   }

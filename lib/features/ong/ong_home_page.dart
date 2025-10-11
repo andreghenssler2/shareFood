@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'ong_painel_page.dart';
 import 'ong_perfil_page.dart';
+import 'ong_doacoes_page.dart';
 
 class OngHomePage extends StatelessWidget {
   const OngHomePage({super.key});
@@ -13,8 +14,10 @@ class OngHomePage extends StatelessWidget {
         backgroundColor: Colors.green, // ou a cor do seu tema
         title: const Text(
           'Painel da ONG',
+          
           style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
@@ -41,7 +44,7 @@ class OngHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const OngPainelPage(),
+                    builder: (context) => const OngDoacoesPage(),
                   ),
                 );
               },
@@ -49,7 +52,15 @@ class OngHomePage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.check_circle),
               title: const Text('Doações Recebidas'),
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const OngDoacoesPage(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.person),
@@ -66,17 +77,6 @@ class OngHomePage extends StatelessWidget {
             ),
 
             const Divider(),
-
-            
-            // ListTile(
-            //   leading: const Icon(Icons.arrow_back),
-            //   title: const Text('Voltar para o Menu Principal'),
-            //   onTap: () {
-            //     Navigator.pop(context); // fecha o Drawer
-            //     Navigator.pop(context); // volta para a Home
-            //   },
-            // ),
-
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
