@@ -24,7 +24,9 @@ import 'features/ong/ong_painel_page.dart';
 // Partner Panel
 import 'features/parceiro/parceiro_painel_page.dart';
 import 'features/parceiro/parceiro_criar_doacao_page.dart';
-// import 'features/parceiro/doacoes_parceiro_page.dart';
+// import 'features/parceiro/parceiro_editar_doacao_page.dart';
+import 'features/parceiro/editar_doacao_page.dart';
+
 
 
 void main() async {
@@ -54,6 +56,11 @@ class ShareFoodApp extends StatelessWidget {
         '/ong': (context) => const OngPainelPage(),
         '/parceiro': (context) => const ParceiroPainelPage(),
         '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
+        // '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
+        '/editarDoacao': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return EditarDoacaoPage(doacao: args);
+        },
       },
     );
   }

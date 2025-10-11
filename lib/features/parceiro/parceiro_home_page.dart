@@ -178,13 +178,6 @@ class ParceiroHomePage extends StatelessWidget {
         ),
       ),
 
-      // 🔸 Corpo principal
-      // body: const Center(
-      //   child: Text(
-      //     'Bem-vindo ao Painel do Parceiro 🏪',
-      //     style: TextStyle(fontSize: 18),
-      //   ),
-      // ),
       body: user == null
     ? const Center(
         child: Text('Usuário não autenticado.'),
@@ -195,6 +188,7 @@ class ParceiroHomePage extends StatelessWidget {
           stream: FirebaseFirestore.instance
               .collection('doacoes')
               .where('parceiroId', isEqualTo: user.uid)
+              .where('status', isEqualTo: 'ativo')
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
