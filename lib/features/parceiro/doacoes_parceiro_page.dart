@@ -11,7 +11,7 @@ class DoacoesParceiroPage extends StatefulWidget {
 }
 
 class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
-  String filtro = 'todos'; // 🔹 controla o filtro ativo
+  String filtro = 'ativos'; // 🔹 controla o filtro ativo
 
   bool _isNearExpiration(DateTime validade, int days) {
     final hoje = DateTime.now();
