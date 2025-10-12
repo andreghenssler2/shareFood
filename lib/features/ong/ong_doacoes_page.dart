@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'ong_carrinho_page.dart';
 
 class OngDoacoesPage extends StatefulWidget {
@@ -10,10 +11,8 @@ class OngDoacoesPage extends StatefulWidget {
 }
 
 class _OngDoacoesPageState extends State<OngDoacoesPage> {
-  // Lista local que armazena os itens que a ONG adiciona ao carrinho
   List<Map<String, dynamic>> listaDeItens = [];
 
-  // Adiciona o item à lista local
   void adicionarAoCarrinho(Map<String, dynamic> item) {
     setState(() {
       listaDeItens.add(item);
@@ -27,7 +26,6 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
     );
   }
 
-  // Abre a página do carrinho e envia a lista de itens selecionados
   void abrirCarrinho() {
     if (listaDeItens.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -47,7 +45,6 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
     );
   }
 
-  // Função que pergunta a quantidade desejada e valida com o estoque
   Future<void> perguntarQuantidadeEAdicionar(
       Map<String, dynamic> dados, String doacaoId) async {
     final TextEditingController quantidadeController = TextEditingController();
@@ -72,7 +69,8 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
           TextButton(
             child: const Text('Adicionar'),
             onPressed: () {
-              final int qtdDesejada = int.tryParse(quantidadeController.text) ?? 0;
+              final int qtdDesejada =
+                  int.tryParse(quantidadeController.text) ?? 0;
               final int qtdDisponivel = dados['quantidade'] ?? 0;
 
               if (qtdDesejada <= 0) {
@@ -95,10 +93,7 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
               adicionarAoCarrinho({
                 'titulo': dados['titulo'] ?? 'Sem título',
                 'quantidade': qtdDesejada,
-                'dataEntrega': dados['dataValidade'] ??
-                    DateTime.now()
-                        .add(const Duration(days: 30))
-                        .toIso8601String(),
+                'dataEntrega': dados['dataValidade'] ?? '',
                 'parceiroId': dados['parceiroId'] ?? 'Desconhecido',
                 'doacaoId': doacaoId,
               });
@@ -109,6 +104,25 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
         ],
       ),
     );
+  }
+
+  /// 🔹 Função auxiliar para formatar data do Firestore
+  String _formatarData(dynamic data) {
+    if (data == null) return '---';
+
+    if (data is Timestamp) {
+      final DateTime dt = data.toDate();
+      return DateFormat('dd/MM/yyyy').format(dt);
+    } else if (data is String) {
+      try {
+        final DateTime dt = DateTime.parse(data);
+        return DateFormat('dd/MM/yyyy').format(dt);
+      } catch (_) {
+        return data;
+      }
+    }
+
+    return '---';
   }
 
   @override
@@ -168,7 +182,16 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
             );
           }
 
-          final doacoes = snapshot.data!.docs;
+          // 🔹 Filtra para mostrar apenas produtos com quantidade > 0
+          final doacoes = snapshot.data!.docs.where((doc) {
+            final dados = doc.data() as Map<String, dynamic>? ?? {};
+            final quantidade = dados['quantidade'] ?? 0;
+            return quantidade > 0;
+          }).toList();
+
+          if (doacoes.isEmpty) {
+            return const Center(child: Text('Nenhuma doação disponível.'));
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.all(8),
@@ -176,10 +199,12 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
             itemBuilder: (context, index) {
               final doc = doacoes[index];
               final dados = doc.data() as Map<String, dynamic>? ?? {};
+              final dataValidade = _formatarData(dados['validade']);
 
               return Card(
                 elevation: 3,
-                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
                 child: ListTile(
                   leading: const Icon(Icons.food_bank, color: Colors.redAccent),
                   title: Text(
@@ -189,16 +214,18 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Quantidade disponível: ${dados['quantidade'] ?? '0'}'),
+                      Text('Quantidade disponível: ${dados['quantidade']}'),
                       Text(
-                        'Validade: ${dados['dataValidade'] ?? '---'}',
+                        'Validade: $dataValidade',
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
                   trailing: IconButton(
-                    icon: const Icon(Icons.add_shopping_cart, color: Colors.green),
-                    onPressed: () => perguntarQuantidadeEAdicionar(dados, doc.id),
+                    icon: const Icon(Icons.add_shopping_cart,
+                        color: Colors.green),
+                    onPressed: () =>
+                        perguntarQuantidadeEAdicionar(dados, doc.id),
                   ),
                 ),
               );

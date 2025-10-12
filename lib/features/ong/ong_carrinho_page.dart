@@ -164,10 +164,11 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                         ? const CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2)
                         : const Icon(Icons.check),
-                    label: const Text('Confirmar Pedido'),
+                    label: const Text('Confirmar Pedido',style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
                       minimumSize: const Size(double.infinity, 50),
+                      
                     ),
                     onPressed: _salvando ? null : confirmarPedido,
                   ),

@@ -66,18 +66,18 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     }
   }
 
-  /// 🔹 Atualizar status e diminuir estoque
+  /// 🔹 Confirmar entrega (diminui estoque)
   Future<void> _confirmarEntrega(String pedidoId, List<dynamic> itens) async {
     try {
       final batch = firestore.batch();
-
       final pedidoRef = firestore.collection('pedidos').doc(pedidoId);
+
       batch.update(pedidoRef, {
         'status': 'Concluído',
         'dataEntrega': Timestamp.now(),
       });
 
-      // Atualizar quantidades dos produtos
+      // Atualizar quantidades dos produtos (diminui)
       for (var item in itens) {
         final idProduto = item['idProduto'];
         final quantidadePedido = item['quantidade'];
@@ -92,9 +92,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
             final novaQuantidade =
                 (quantidadeAtual - quantidadePedido).clamp(0, quantidadeAtual);
 
-            batch.update(docProduto.reference, {
-              'quantidade': novaQuantidade,
-            });
+            batch.update(docProduto.reference, {'quantidade': novaQuantidade});
           }
         }
       }
@@ -117,7 +115,55 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     }
   }
 
-  /// 🔹 Buscar nome do produto (com fallback)
+  /// 🔹 Recusar doação (soma no estoque)
+  Future<void> _recusarDoacao(String pedidoId, List<dynamic> itens) async {
+    try {
+      final batch = firestore.batch();
+      final pedidoRef = firestore.collection('pedidos').doc(pedidoId);
+
+      batch.update(pedidoRef, {
+        'status': 'Recusado',
+        'dataRecusa': Timestamp.now(),
+      });
+
+      // Atualizar quantidades dos produtos (soma)
+      for (var item in itens) {
+        final idProduto = item['idProduto'];
+        final quantidadePedido = item['quantidade'];
+
+        if (idProduto != null) {
+          final docProduto =
+              await firestore.collection('doacoes').doc(idProduto).get();
+
+          if (docProduto.exists) {
+            final dados = docProduto.data()!;
+            final quantidadeAtual = (dados['quantidade'] ?? 0) as int;
+            final novaQuantidade = quantidadeAtual + quantidadePedido;
+
+            batch.update(docProduto.reference, {'quantidade': novaQuantidade});
+          }
+        }
+      }
+
+      await batch.commit();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Doação recusada e estoque restaurado!'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao recusar doação: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  /// 🔹 Buscar nome do produto
   Future<String> _buscarNomeProduto(Map<String, dynamic> item) async {
     if (item.containsKey('nomeProduto') && item['nomeProduto'] != null) {
       return item['nomeProduto'];
@@ -205,7 +251,9 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
                     decoration: BoxDecoration(
                       color: pedido['status'] == 'Concluído'
                           ? Colors.green[600]
-                          : Colors.orange[600],
+                          : pedido['status'] == 'Recusado'
+                              ? Colors.red[600]
+                              : Colors.orange[600],
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -232,29 +280,58 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
                       );
                     }).toList(),
 
-                    if (pedido['status'] != 'Concluído')
+                    if (pedido['status'] == 'Pendente') ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        child: ElevatedButton.icon(
-                          onPressed: () =>
-                              _confirmarEntrega(pedido['pedidoId'], itens),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromRGBO(158, 13, 0, 1),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                            horizontal: 16, vertical: 6),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () => _confirmarEntrega(
+                                    pedido['pedidoId'], itens),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      const Color.fromRGBO(158, 13, 0, 1),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.check_circle_outline,
+                                    color: Colors.white),
+                                label: const Text(
+                                  'Confirmar',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
                             ),
-                          ),
-                          icon: const Icon(Icons.check_circle_outline,
-                              color: Colors.white),
-                          label: const Text(
-                            'Confirmar Entrega',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () => _recusarDoacao(
+                                    pedido['pedidoId'], itens),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red[700],
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.cancel_outlined,
+                                    color: Colors.white),
+                                label: const Text(
+                                  'Recusar',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                    ],
                   ],
                 ),
               );
