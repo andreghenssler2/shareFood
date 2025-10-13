@@ -27,7 +27,7 @@ import 'features/ong/ong_carrinho_page.dart';
 import 'features/parceiro/parceiro_painel_page.dart';
 import 'features/parceiro/parceiro_criar_doacao_page.dart';
 import 'features/parceiro/editar_doacao_page.dart';
-import 'features/parceiro/historico_doacoes_page.dart';
+// import 'features/parceiro/historico_doacoes_page.dart';
 import 'features/parceiro/historico_pedidos_page.dart';
 
 void main() async {

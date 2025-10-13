@@ -42,7 +42,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
               'dataPedido': pedidoData['dataPedido'],
               'status': pedidoData['status'] ?? 'Pendente',
               'itens': itensParceiro,
-              'idOng': pedidoData['idOng'],
+              'idOng': pedidoData['idOng'] ?? '',
             });
           }
         }
@@ -54,6 +54,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
 
   /// 🔹 Buscar nome da ONG
   Future<String> _buscarNomeOng(String idOng) async {
+    if (idOng.isEmpty) return 'ONG não informada';
     try {
       final doc = await firestore.collection('ongs').doc(idOng).get();
       if (doc.exists) {
@@ -66,18 +67,18 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     }
   }
 
-  /// 🔹 Confirmar entrega (diminui estoque)
-  Future<void> _confirmarEntrega(String pedidoId, List<dynamic> itens) async {
+  /// 🔹 Confirmar entrega com data escolhida
+  Future<void> _confirmarEntrega(
+      String pedidoId, List<dynamic> itens, DateTime dataEntrega) async {
     try {
       final batch = firestore.batch();
       final pedidoRef = firestore.collection('pedidos').doc(pedidoId);
 
       batch.update(pedidoRef, {
         'status': 'Concluído',
-        'dataEntrega': Timestamp.now(),
+        'dataEntrega': Timestamp.fromDate(dataEntrega),
       });
 
-      // Atualizar quantidades dos produtos (diminui)
       for (var item in itens) {
         final idProduto = item['idProduto'];
         final quantidadePedido = item['quantidade'];
@@ -126,7 +127,6 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
         'dataRecusa': Timestamp.now(),
       });
 
-      // Atualizar quantidades dos produtos (soma)
       for (var item in itens) {
         final idProduto = item['idProduto'];
         final quantidadePedido = item['quantidade'];
@@ -280,6 +280,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
                       );
                     }).toList(),
 
+                    // Botões de ação quando o pedido está pendente
                     if (pedido['status'] == 'Pendente') ...[
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -288,11 +289,30 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
                           children: [
                             Expanded(
                               child: ElevatedButton.icon(
-                                onPressed: () => _confirmarEntrega(
-                                    pedido['pedidoId'], itens),
+                                onPressed: () async {
+                                  final dataSelecionada = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime.now(),
+                                    lastDate: DateTime.now()
+                                        .add(const Duration(days: 365)),
+                                    locale: const Locale('pt', 'BR'),
+                                    helpText:
+                                        'Selecione a data prevista para entrega',
+                                    cancelText: 'Cancelar',
+                                    confirmText: 'Confirmar',
+                                  );
+
+                                  if (dataSelecionada != null) {
+                                    await _confirmarEntrega(
+                                        pedido['pedidoId'],
+                                        itens,
+                                        dataSelecionada);
+                                  }
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
-                                      const Color.fromRGBO(158, 13, 0, 1),
+                                      const Color.fromARGB(255, 0, 49, 139),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
