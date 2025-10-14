@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
 import 'register_page.dart';
+import 'reset_password_page.dart';
 import '../../ong/ong_home_page.dart';
 import '../../parceiro/parceiro_home_page.dart';
 import '../../home/home_page.dart';
@@ -166,6 +167,17 @@ class _LoginPageState extends State<LoginPage> {
                   );
                 },
                 child: const Text('Criar conta'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ResetPasswordPage(),
+                    ),
+                  );
+                },
+                child: const Text('Esqueceu a senha?'),
               ),
             ],
           ),
