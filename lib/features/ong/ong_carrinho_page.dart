@@ -75,10 +75,10 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
           'status': 'Pendente',
           'dataPedido': DateTime.now(),
           'itens': itens.map((i) => {
-              'idParceiro': parceiroId,
-                'idProduto': i['doacaoId'],
-                'quantidade': i['quantidade'],
-              }).toList(),
+            'idParceiro': parceiroId,
+            'idProduto': i['doacaoId'],
+            'quantidade': i['quantidade'],
+          }).toList(),
         });
 
         // 🔹 Atualiza estoque

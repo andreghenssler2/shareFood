@@ -16,6 +16,29 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
   String filtroStatus = 'Todos';
   final List<String> statusList = ['Todos', 'Pendente', 'Concluído', 'Recusado'];
 
+  Future<Map<String, dynamic>> _buscarDadosParceiroEProduto(
+      String parceiroId, String produtoId) async {
+    final parceiroSnap = await FirebaseFirestore.instance
+        .collection('parceiros')
+        .doc(parceiroId)
+        .get();
+
+    final doacaoSnap = await FirebaseFirestore.instance
+        .collection('doacoes')
+        .doc(produtoId)
+        .get();
+
+    final empresa = parceiroSnap.data()?['empresa'] ?? 'Empresa não informada';
+    final titulo = doacaoSnap.data()?['titulo'] ?? 'Produto';
+    final validade = doacaoSnap.data()?['validade'] ?? 'Sem validade';
+
+    return {
+      'empresa': empresa,
+      'titulo': titulo,
+      'validade': validade,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final pedidosRef = FirebaseFirestore.instance.collection('pedidos');
@@ -28,7 +51,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
       ),
       body: Column(
         children: [
-          // 🔽 Filtro de status
+          // 🔽 Filtro
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropdownButtonFormField<String>(
@@ -60,55 +83,17 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Erro ao carregar doações: ${snapshot.error}'),
-                  );
-                }
-
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return const Center(
-                    child: Text(
-                      'Nenhuma doação recebida ainda.',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: Text('Nenhuma doação recebida ainda.'),
                   );
                 }
 
-                // 🔎 Aplica filtro
                 var pedidos = snapshot.data!.docs.where((doc) {
                   final status = doc['status'] ?? 'Pendente';
                   if (filtroStatus == 'Todos') return true;
                   return status == filtroStatus;
                 }).toList();
-
-                if (pedidos.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Nenhuma doação com status "$filtroStatus".',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  );
-                }
-
-                // 🔄 Ordena por data
-                pedidos.sort((a, b) {
-                  final aData = a['dataPedido'];
-                  final bData = b['dataPedido'];
-
-                  DateTime? aDate;
-                  DateTime? bDate;
-
-                  try {
-                    if (aData is Timestamp) aDate = aData.toDate();
-                    if (bData is Timestamp) bDate = bData.toDate();
-                  } catch (_) {}
-
-                  if (aDate == null && bDate == null) return 0;
-                  if (aDate == null) return 1;
-                  if (bDate == null) return -1;
-                  return bDate.compareTo(aDate);
-                });
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(12),
@@ -116,107 +101,121 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                   itemBuilder: (context, index) {
                     final pedido = pedidos[index];
                     final data = pedido.data() as Map<String, dynamic>;
-
-                    final nomeParceiro =
-                        data['nomeParceiro'] ?? 'Parceiro não informado';
-                    final itens = List<Map<String, dynamic>>.from(
-                        data['itens'] ?? []);
+                    final itens =
+                        List<Map<String, dynamic>>.from(data['itens'] ?? []);
                     final status = data['status'] ?? 'Pendente';
-                    final validade = data['validade'];
                     final dataPedido = data['dataPedido'];
+                    final dataPrevistaEntrega = data['dataEntrega'];
 
-                    // 🕒 Formatando data
+                    // 📅 Formatação das datas
                     String dataFormatada = 'Data não disponível';
                     if (dataPedido is Timestamp) {
                       dataFormatada = DateFormat('dd/MM/yyyy HH:mm')
                           .format(dataPedido.toDate());
                     }
 
-                    // 🧾 Verifica validade
-                    String validadeStr = 'Sem validade';
-                    bool expirando = false;
-                    if (validade is Timestamp) {
-                      final v = validade.toDate();
-                      validadeStr = DateFormat('dd/MM/yyyy').format(v);
-                      expirando = v.isBefore(DateTime.now().add(const Duration(days: 7)));
+                    String dataEntregaStr = 'Sem data';
+                    if (dataPrevistaEntrega is Timestamp) {
+                      dataEntregaStr = DateFormat('dd/MM/yyyy')
+                          .format(dataPrevistaEntrega.toDate());
                     }
 
-                    // 🟢 Ícone de status
+                    // 🎨 Ícone e cor conforme status
                     IconData icone;
                     Color cor;
                     switch (status) {
-                      case 'Concluido':
+                      case 'Concluído':
                         icone = Icons.check_circle;
                         cor = Colors.green;
                         break;
                       case 'Recusado':
-                        icone = Icons.local_shipping;
-                        cor = Colors.blue;
+                        icone = Icons.cancel;
+                        cor = Colors.red;
                         break;
                       default:
                         icone = Icons.access_time;
                         cor = Colors.orange;
                     }
 
-                    return Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    return FutureBuilder<Map<String, dynamic>>(
+                      future: _buscarDadosParceiroEProduto(
+                        itens.first['idParceiro'],
+                        itens.first['idProduto'],
                       ),
-                      elevation: 3,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      child: ExpansionTile(
-                        leading: Icon(icone, color: cor),
-                        title: Text(
-                          nomeParceiro,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(158, 13, 0, 1),
+                      builder: (context, asyncSnap) {
+                        if (!asyncSnap.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        final titulo = asyncSnap.data!['titulo'];
+                        final empresa = asyncSnap.data!['empresa'];
+                        final validade = asyncSnap.data!['validade'];
+
+                        return Card(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        subtitle: Text('Recebido em $dataFormatada'),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
+                          elevation: 3,
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(12),
+                            leading: Icon(icone, color: cor, size: 32),
+                            title: Text(
+                              titulo,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color.fromRGBO(158, 13, 0, 1),
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Status: ',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'Empresa: $empresa',
+                                        style: const TextStyle(fontSize: 14),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Entrega: $dataEntregaStr',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ],
                                 ),
-                                Text(status, style: TextStyle(color: cor)),
-                                const Spacer(),
-                                Text(
-                                  'Validade: ',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  validadeStr,
-                                  style: TextStyle(
-                                    color:
-                                        expirando ? Colors.red : Colors.black,
-                                    fontWeight: expirando
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Validade: $validade',
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                    Text(
+                                      'Status: $status',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: cor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
-                          ...itens.map((item) {
-                            final nome = item['nome'] ?? 'Item';
-                            final qtd = item['quantidade'] ?? '0';
-                            return ListTile(
-                              dense: true,
-                              leading: const Icon(Icons.fastfood),
-                              title: Text(nome),
-                              trailing: Text('x$qtd'),
-                            );
-                          }),
-                        ],
-                      ),
+                        );
+                      },
                     );
                   },
                 );
