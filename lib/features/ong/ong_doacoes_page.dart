@@ -106,7 +106,6 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
     );
   }
 
-  /// 🔹 Função auxiliar para formatar data do Firestore
   String _formatarData(dynamic data) {
     if (data == null) return '---';
 
@@ -182,7 +181,6 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
             );
           }
 
-          // 🔹 Filtra para mostrar apenas produtos com quantidade > 0
           final doacoes = snapshot.data!.docs.where((doc) {
             final dados = doc.data() as Map<String, dynamic>? ?? {};
             final quantidade = dados['quantidade'] ?? 0;
@@ -200,34 +198,63 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
               final doc = doacoes[index];
               final dados = doc.data() as Map<String, dynamic>? ?? {};
               final dataValidade = _formatarData(dados['validade']);
+              final parceiroId = dados['parceiroId'] ?? '';
 
-              return Card(
-                elevation: 3,
-                margin:
-                    const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                child: ListTile(
-                  leading: const Icon(Icons.food_bank, color: Colors.redAccent),
-                  title: Text(
-                    dados['titulo'] ?? 'Sem título',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Quantidade disponível: ${dados['quantidade']}'),
-                      Text(
-                        'Validade: $dataValidade',
-                        style: const TextStyle(color: Colors.grey),
+              return FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('parceiros')
+                    .doc(parceiroId)
+                    .get(),
+                builder: (context, parceiroSnap) {
+                  if (parceiroSnap.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: LinearProgressIndicator(),
+                    );
+                  }
+
+                  String nomeParceiro = 'Parceiro desconhecido';
+                  if (parceiroSnap.hasData && parceiroSnap.data!.exists) {
+                    final parceiroData =
+                        parceiroSnap.data!.data() as Map<String, dynamic>?;
+                    nomeParceiro = parceiroData?['empresa'] ??
+                        parceiroData?['nome'] ??
+                        'Parceiro sem nome';
+                  }
+
+                  return Card(
+                    elevation: 3,
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                    child: ListTile(
+                      leading:
+                          const Icon(Icons.food_bank, color: Colors.redAccent),
+                      title: Text(
+                        dados['titulo'] ?? 'Sem título',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add_shopping_cart,
-                        color: Colors.green),
-                    onPressed: () =>
-                        perguntarQuantidadeEAdicionar(dados, doc.id),
-                  ),
-                ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Quantidade disponível: ${dados['quantidade']}'),
+                          Text('Validade: $dataValidade'),
+                          Text(
+                            'Doador: $nomeParceiro',
+                            style: const TextStyle(
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic),
+                          ),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.add_shopping_cart,
+                            color: Colors.green),
+                        onPressed: () =>
+                            perguntarQuantidadeEAdicionar(dados, doc.id),
+                      ),
+                    ),
+                  );
+                },
               );
             },
           );

@@ -22,13 +22,10 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       return;
     }
 
-    setState(() {
-      _salvando = true;
-    });
+    setState(() => _salvando = true);
 
     try {
       final user = FirebaseAuth.instance.currentUser;
-
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Usuário não autenticado!')),
@@ -39,66 +36,70 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       final firestore = FirebaseFirestore.instance;
       final pedidosRef = firestore.collection('pedidos');
 
-      // 🔹 Verificar estoque antes de confirmar o pedido
+      // 🔹 Verificar estoque antes
       for (var item in widget.itensCarrinho) {
-        final doacaoRef = firestore.collection('doacoes').doc(item['doacaoId']);
-        final doc = await doacaoRef.get();
-
-        if (!doc.exists) {
-          throw Exception('Produto "${item['titulo']}" não encontrado.');
-        }
+        final doc = await firestore.collection('doacoes').doc(item['doacaoId']).get();
+        if (!doc.exists) throw Exception('Produto "${item['titulo']}" não encontrado.');
 
         final dados = doc.data()!;
-        final int quantidadeDisponivel = dados['quantidade'] ?? 0;
-        final int quantidadeSolicitada = item['quantidade'] ?? 0;
+        final int disponivel = dados['quantidade'] ?? 0;
+        final int solicitada = item['quantidade'] ?? 0;
 
-        if (quantidadeSolicitada > quantidadeDisponivel) {
-          throw Exception(
-              'Quantidade insuficiente de "${item['titulo']}". Disponível: $quantidadeDisponivel.');
+        if (solicitada > disponivel) {
+          throw Exception('Quantidade insuficiente de "${item['titulo']}".');
         }
       }
 
-      // 🔹 Criar pedido
-      final novoPedido = await pedidosRef.add({
-        'idOng': user.uid,
-        'status': 'Pendente',
-        'dataPedido': DateTime.now(),
-        'itens': widget.itensCarrinho.map((item) {
-          return {
-            'idProduto': item['doacaoId'] ?? '',
-            'idParceiro': item['parceiroId'] ?? '',
-            'quantidade': item['quantidade'] ?? 0,
-          };
-        }).toList(),
-      });
-
-      // 🔹 Atualizar estoques no Firestore
-      final batch = firestore.batch();
-
+      // 🔹 Agrupar por parceiro
+      final Map<String, List<Map<String, dynamic>>> pedidosPorParceiro = {};
       for (var item in widget.itensCarrinho) {
-        final doacaoRef = firestore.collection('doacoes').doc(item['doacaoId']);
-        final doc = await doacaoRef.get();
+        final parceiroId = item['parceiroId'] ?? 'sem_parceiro';
+        pedidosPorParceiro.putIfAbsent(parceiroId, () => []);
+        pedidosPorParceiro[parceiroId]!.add(item);
+      }
 
-        if (doc.exists) {
-          final dados = doc.data()!;
-          final int quantidadeAtual = (dados['quantidade'] ?? 0).toInt();
-          final int novaQuantidade = quantidadeAtual - ((item['quantidade'] ?? 0) as num).toInt();
+      final batch = firestore.batch();
+      List<String> idsPedidos = [];
 
-          batch.update(doacaoRef, {
-            'quantidade': novaQuantidade < 0 ? 0 : novaQuantidade,
-          });
+      // 🔹 Criar 1 pedido por parceiro
+      for (var entry in pedidosPorParceiro.entries) {
+        final parceiroId = entry.key;
+        final itens = entry.value;
+
+        final novoPedido = pedidosRef.doc();
+        idsPedidos.add(novoPedido.id);
+
+        batch.set(novoPedido, {
+          'idOng': user.uid,
+          
+          'status': 'Pendente',
+          'dataPedido': DateTime.now(),
+          'itens': itens.map((i) => {
+              'idParceiro': parceiroId,
+                'idProduto': i['doacaoId'],
+                'quantidade': i['quantidade'],
+              }).toList(),
+        });
+
+        // 🔹 Atualiza estoque
+        for (var item in itens) {
+          final ref = firestore.collection('doacoes').doc(item['doacaoId']);
+          final doc = await ref.get();
+          if (doc.exists) {
+            final atual = (doc['quantidade'] ?? 0).toInt();
+            final novaQtd = atual - (item['quantidade'] ?? 0);
+            batch.update(ref, {'quantidade': novaQtd < 0 ? 0 : novaQtd});
+          }
         }
       }
 
       await batch.commit();
 
-      setState(() {
-        widget.itensCarrinho.clear();
-      });
+      setState(() => widget.itensCarrinho.clear());
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Pedido ${novoPedido.id} confirmado com sucesso!'),
+          content: Text('Pedidos confirmados: ${idsPedidos.join(', ')}'),
           backgroundColor: Colors.green,
         ),
       );
@@ -106,15 +107,10 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao confirmar pedido: $e'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('Erro ao confirmar pedido: $e')),
       );
     } finally {
-      setState(() {
-        _salvando = false;
-      });
+      setState(() => _salvando = false);
     }
   }
 
@@ -164,11 +160,11 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                         ? const CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2)
                         : const Icon(Icons.check),
-                    label: const Text('Confirmar Pedido',style: TextStyle(color: Colors.white)),
+                    label: const Text('Confirmar Pedido',
+                        style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
                       minimumSize: const Size(double.infinity, 50),
-                      
                     ),
                     onPressed: _salvando ? null : confirmarPedido,
                   ),
