@@ -111,6 +111,7 @@ class ShareFoodApp extends StatelessWidget {
         '/my-donations': (context) => const MyDonationsPage(),
         '/create-donation': (context) => const CreateDonationPage(),
         '/profile': (context) => const ProfilePage(),
+        '/parceiro_home': (context) => const ParceiroPainelPage(),
 
         // 🏢 ONG
         '/ong': (context) => const OngPainelPage(),

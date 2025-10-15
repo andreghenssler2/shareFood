@@ -3,9 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../auth/services/ong_service.dart';
+import '../ong/ong_home_page.dart';
 
 class OngPerfilPage extends StatefulWidget {
-  const OngPerfilPage({super.key});
+  final String uid;
+
+  const OngPerfilPage({super.key, required this.uid});
 
   @override
   State<OngPerfilPage> createState() => _OngPerfilPageState();
@@ -29,8 +32,15 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
   bool _isEditing = false;
   bool _cnpjBloqueado = false;
 
+  // ✅ Máscara CNPJ
   final cnpjMask = MaskTextInputFormatter(
     mask: '##.###.###/####-##',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  // ✅ Máscara Telefone (formato (51) 99999-9999)
+  final telefoneMask = MaskTextInputFormatter(
+    mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
@@ -43,8 +53,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
 
   Future<void> _carregarDados() async {
     if (user == null) return;
-    final dados = await _service.buscarPerfil(user!.uid);
-
+    final dados = await _service.buscarPerfil(widget.uid);
     if (dados != null) {
       _nomeController.text = dados['nome'] ?? '';
       _responsavelController.text = dados['responsavel'] ?? '';
@@ -59,7 +68,6 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
         _cnpjBloqueado = true;
       }
     }
-
     setState(() => _isLoading = false);
   }
 
@@ -67,7 +75,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
     if (!_formKey.currentState!.validate() || user == null) return;
 
     final dados = {
-      'uid': user!.uid,
+      'uid': widget.uid,
       'email': user!.email,
       'nome': _nomeController.text.trim(),
       'responsavel': _responsavelController.text.trim(),
@@ -82,16 +90,31 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
       'atualizadoEm': FieldValue.serverTimestamp(),
     };
 
-    await _service.salvarPerfil(user!.uid, dados);
+    try {
+      await _service.salvarPerfil(widget.uid, dados);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Perfil da ONG atualizado com sucesso!')),
-    );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Perfil da ONG atualizado com sucesso!')),
+      );
 
-    setState(() {
-      _isEditing = false;
-      _cnpjBloqueado = true;
-    });
+      setState(() {
+        _isEditing = false;
+        _cnpjBloqueado = true;
+      });
+
+      // ✅ Redireciona para tela principal
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const OngHomePage()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao salvar perfil: $e')),
+      );
+    }
   }
 
   @override
@@ -137,7 +160,6 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                     v == null || v.isEmpty ? 'Informe o nome da ONG' : null,
               ),
               const SizedBox(height: 16),
-
               _buildTextField(
                 label: 'Responsável',
                 controller: _responsavelController,
@@ -146,7 +168,6 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                     v == null || v.isEmpty ? 'Informe o responsável' : null,
               ),
               const SizedBox(height: 16),
-
               TextFormField(
                 controller: _cnpjController,
                 inputFormatters: [cnpjMask],
@@ -158,8 +179,9 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                       ? const Icon(Icons.lock, color: Colors.grey)
                       : null,
                   filled: !_isEditing || _cnpjBloqueado,
-                  fillColor:
-                      !_isEditing || _cnpjBloqueado ? Colors.grey.shade100 : null,
+                  fillColor: !_isEditing || _cnpjBloqueado
+                      ? Colors.grey.shade100
+                      : null,
                 ),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Informe o CNPJ';
@@ -169,27 +191,36 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              _buildTextField(
-                label: 'Telefone',
+              // ✅ TELEFONE FORMATADO
+              TextFormField(
                 controller: _telefoneController,
+                inputFormatters: [telefoneMask],
                 enabled: _isEditing,
                 keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Telefone',
+                  border: OutlineInputBorder(),
+                  hintText: '(51) 99999-9999',
+                ),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Informe o telefone';
+                  if (v.length < 15) return 'Telefone incompleto';
+                  return null;
+                },
               ),
-              const SizedBox(height: 24),
 
+              const SizedBox(height: 24),
               const Text(
                 'Endereço',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-
               _buildTextField(
                 label: 'Rua',
                 controller: _ruaController,
                 enabled: _isEditing,
               ),
               const SizedBox(height: 12),
-
               _buildTextField(
                 label: 'Número',
                 controller: _numeroController,
@@ -197,14 +228,12 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 12),
-
               _buildTextField(
                 label: 'Cidade',
                 controller: _cidadeController,
                 enabled: _isEditing,
               ),
               const SizedBox(height: 12),
-
               _buildTextField(
                 label: 'UF',
                 controller: _ufController,
@@ -218,7 +247,6 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                 },
               ),
               const SizedBox(height: 24),
-
               if (_isEditing)
                 ElevatedButton.icon(
                   onPressed: _salvarPerfil,
@@ -229,9 +257,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
-
               const SizedBox(height: 16),
-
               if (user?.email != null)
                 Text(
                   'Email: ${user!.email}',

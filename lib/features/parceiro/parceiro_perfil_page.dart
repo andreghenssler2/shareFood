@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'parceiro_home_page.dart';
 import '../auth/services/parceiro_service.dart';
 
 class ParceiroPerfilPage extends StatefulWidget {
-  const ParceiroPerfilPage({super.key});
+  final String uid;
+
+  const ParceiroPerfilPage({super.key, required this.uid});
 
   @override
   State<ParceiroPerfilPage> createState() => _ParceiroPerfilPageState();
@@ -24,7 +27,6 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
   final _cidadeController = TextEditingController();
   final _ufController = TextEditingController();
 
-  User? user;
   bool _isLoading = true;
   bool _isEditing = false;
   bool _cnpjBloqueado = false;
@@ -37,13 +39,11 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
   @override
   void initState() {
     super.initState();
-    user = FirebaseAuth.instance.currentUser;
     _carregarDados();
   }
 
   Future<void> _carregarDados() async {
-    if (user == null) return;
-    final dados = await _service.buscarPerfil(user!.uid);
+    final dados = await _service.buscarPerfil(widget.uid);
 
     if (dados != null) {
       _nomeController.text = dados['nome'] ?? '';
@@ -64,11 +64,16 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
   }
 
   Future<void> _salvarPerfil() async {
-    if (!_formKey.currentState!.validate() || user == null) return;
+    if (!_formKey.currentState!.validate()) return;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    setState(() => _isLoading = true);
 
     final dados = {
-      'uid': user!.uid,
-      'email': user!.email,
+      'uid': user.uid,
+      'email': user.email,
       'nome': _nomeController.text.trim(),
       'empresa': _empresaController.text.trim(),
       'cnpj': _cnpjController.text.trim(),
@@ -82,16 +87,35 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
       'atualizadoEm': FieldValue.serverTimestamp(),
     };
 
-    await _service.salvarPerfil(user!.uid, dados);
+    try {
+      await FirebaseFirestore.instance
+          .collection('parceiros')
+          .doc(widget.uid)
+          .set(dados, SetOptions(merge: true));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Perfil atualizado com sucesso!')),
-    );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+        );
 
-    setState(() {
-      _isEditing = false;
-      _cnpjBloqueado = true; // bloqueia o campo após salvar
-    });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const ParceiroHomePage()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao salvar: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _isEditing = false;
+          _cnpjBloqueado = true;
+        });
+      }
+    }
   }
 
   @override
@@ -218,27 +242,23 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
 
               if (_isEditing)
                 ElevatedButton.icon(
-                  onPressed: _salvarPerfil,
-                  icon: const Icon(Icons.save,color: Colors.white),
-
+                  onPressed: _isLoading ? null : _salvarPerfil,
+                  icon: const Icon(Icons.save, color: Colors.white),
                   label: const Text('Salvar Alterações'),
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    
                   ),
                 ),
 
               const SizedBox(height: 16),
 
-              if (user?.email != null)
-                Text(
-                  'Email: ${user!.email}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
-                ),
+              Text(
+                'UID: ${widget.uid}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.grey),
+              ),
             ],
           ),
         ),

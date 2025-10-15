@@ -138,7 +138,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Quantidade: ${item['quantidade']}'),
-                            Text('Validade: ${item['dataEntrega'] ?? '---'}'),
+                            Text('Validade: ${item['dataPedido'] ?? '---'}'),
                           ],
                         ),
                         trailing: IconButton(

@@ -4,9 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
 import 'register_page.dart';
 import 'reset_password_page.dart';
+
+// Telas principais
 import '../../ong/ong_home_page.dart';
+import '../../ong/ong_perfil_page.dart';
 import '../../parceiro/parceiro_home_page.dart';
-import '../../admin/admin_dashboard_page.dart'; // ✅ no topo do arquiv
+import '../../parceiro/parceiro_perfil_page.dart';
+import '../../admin/admin_dashboard_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -67,56 +71,75 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  /// 🔍 Verifica o tipo do usuário por UID ou E-MAIL
+  /// 🔍 Verifica o tipo e redireciona
   Future<void> _verificarTipoUsuario(String uid, String email) async {
-    DocumentSnapshot? doc;
+    final usersRef = FirebaseFirestore.instance.collection('users');
+    final ongsRef = FirebaseFirestore.instance.collection('ongs');
+    final parceirosRef = FirebaseFirestore.instance.collection('parceiros');
 
-    // 1️⃣ Tenta buscar pelo UID
-    final uidDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .get();
+    DocumentSnapshot userDoc = await usersRef.doc(uid).get();
 
-    if (uidDoc.exists) {
-      doc = uidDoc;
-    } else {
-      // 2️⃣ Se não achar, tenta buscar pelo e-mail
-      final query = await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .limit(1)
-          .get();
-
-      if (query.docs.isNotEmpty) {
-        doc = query.docs.first;
-      }
-    }
-
-    if (doc == null || !doc.exists) {
+    // 🔹 Se o documento não existir
+    if (!userDoc.exists) {
       _showErrorDialog('Usuário não encontrado no banco de dados.');
       return;
     }
 
-    final tipo = doc['tipo'] ?? '';
+    final tipo = userDoc['tipo'] ?? '';
 
     if (tipo == 'admin') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
       );
-    } else if (tipo == 'ong') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const OngHomePage()),
-      );
-    } else if (tipo == 'parceiro') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const ParceiroHomePage()),
-      );
-    } else {
-      _showErrorDialog('Tipo de usuário desconhecido.');
+      return;
     }
+
+    if (tipo == 'ong') {
+      // 🔍 Verifica se ONG já cadastrou o perfil
+      final ongQuery = await ongsRef.where('uid', isEqualTo: uid).limit(1).get();
+
+      if (ongQuery.docs.isEmpty) {
+        // 🔸 ONG ainda não cadastrada → preencher perfil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OngPerfilPage(uid: uid), // 🔹 mantém UID
+          ),
+        );
+      } else {
+        // ✅ ONG já cadastrada → vai pra home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OngHomePage()),
+        );
+      }
+      return;
+    }
+
+    if (tipo == 'parceiro') {
+      // 🔍 Verifica se parceiro já cadastrou o perfil
+      final parceiroQuery = await parceirosRef.where('uid', isEqualTo: uid).limit(1).get();
+
+      if (parceiroQuery.docs.isEmpty) {
+        // 🔸 Parceiro ainda não cadastrou → vai preencher perfil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ParceiroPerfilPage(uid: uid), // 🔹 mantém UID
+          ),
+        );
+      } else {
+        // ✅ Já tem perfil → vai pra home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const ParceiroHomePage()),
+        );
+      }
+      return;
+    }
+
+    _showErrorDialog('Tipo de usuário desconhecido.');
   }
 
   void _showErrorDialog(String message) {

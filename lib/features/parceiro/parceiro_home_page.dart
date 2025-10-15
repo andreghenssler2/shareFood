@@ -166,7 +166,9 @@ class ParceiroHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ParceiroPerfilPage(),
+                    builder: (context) => ParceiroPerfilPage(
+                      uid: FirebaseAuth.instance.currentUser!.uid,
+                    ),
                   ),
                 );
               },

@@ -84,7 +84,11 @@ class OngHomePage extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const OngPerfilPage()),
+                  MaterialPageRoute(
+                    builder: (context) => OngPerfilPage(
+                      uid: FirebaseAuth.instance.currentUser!.uid,
+                    ),
+                  ),
                 );
               },
             ),

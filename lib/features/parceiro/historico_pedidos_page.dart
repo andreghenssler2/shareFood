@@ -90,8 +90,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
           if (docProduto.exists) {
             final dados = docProduto.data()!;
             final quantidadeAtual = (dados['quantidade'] ?? 0) as int;
-            final novaQuantidade =
-                (quantidadeAtual - quantidadePedido).clamp(0, quantidadeAtual);
+            final novaQuantidade = (quantidadeAtual - quantidadePedido).clamp(0, quantidadeAtual);
 
             batch.update(docProduto.reference, {'quantidade': novaQuantidade});
           }

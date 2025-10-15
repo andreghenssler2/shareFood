@@ -77,7 +77,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
             child: StreamBuilder<QuerySnapshot>(
               stream: pedidosRef
                   .where('idOng', isEqualTo: user?.uid)
-                  // .orderBy('dataPedido', descending: false)
+                  // .orderBy('dataPedido', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
