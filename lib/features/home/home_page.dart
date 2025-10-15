@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../auth/services/auth_service.dart';
-import '../ong/ong_home_page.dart'; // ✅ importa a tela principal do menu da ONG
-// import '../parceiro/parceiro_painel_page.dart'; 
-import '../parceiro/parceiro_home_page.dart';// ✅ importa a tela principal do menu da ONG
+
+// ✅ Telas principais por perfil
+import '../ong/ong_home_page.dart';
+import '../parceiro/parceiro_home_page.dart';
+import '../admin/admin_dashboard_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -28,6 +30,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
+
+            // 📦 Itens padrão do usuário comum
             ListTile(
               leading: const Icon(Icons.fastfood),
               title: const Text('Minhas Doações'),
@@ -53,43 +57,61 @@ class HomePage extends StatelessWidget {
               },
             ),
 
-            // 🟩 Novo item: Painel da ONG
+            const Divider(),
+
+            // 🏢 Painel ONG
             ListTile(
               leading: const Icon(Icons.volunteer_activism),
               title: const Text('Painel da ONG'),
               onTap: () {
-                Navigator.pop(context); // fecha o Drawer
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const OngHomePage(), // ✅ abre o menu da ONG
+                    builder: (context) => const OngHomePage(),
                   ),
                 );
               },
             ),
 
+            // 🏪 Painel Parceiro
             ListTile(
-  leading: const Icon(Icons.store_mall_directory),
-  title: const Text('Painel do Parceiro'),
-  onTap: () {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const ParceiroHomePage(),
-      ),
-    );
-  },
-),
+              leading: const Icon(Icons.store_mall_directory),
+              title: const Text('Painel do Parceiro'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ParceiroHomePage(),
+                  ),
+                );
+              },
+            ),
 
-
+            // 🧑‍💼 Painel do Administrador (novo)
+            ListTile(
+              leading: const Icon(Icons.admin_panel_settings),
+              title: const Text('Painel do Administrador'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminDashboardPage(),
+                  ),
+                );
+              },
+            ),
 
             const Divider(),
 
+            // 🚪 Sair
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
               onTap: () async {
+                Navigator.pop(context);
                 await authService.signOut();
                 Navigator.pushReplacementNamed(context, '/login');
               },

@@ -25,6 +25,7 @@ dependencies:
   provider: ^6.1.2
   intl: 0.20.2
   uuid: ^4.5.1
+  async: ^2.11.0   # ✅ Adicione esta linha
 
   # Upload de imagens
   image_picker: ^1.1.2
@@ -32,7 +33,7 @@ dependencies:
   # Formatação de campos
   mask_text_input_formatter: 2.9.0
   flutter_masked_text2: ^0.9.1
-
+  syncfusion_flutter_charts: ^31.1.23
   # Mapa
   url_launcher: ^6.3.0
   google_maps_flutter: ^2.6.1

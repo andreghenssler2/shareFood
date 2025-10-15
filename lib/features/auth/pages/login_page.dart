@@ -6,7 +6,7 @@ import 'register_page.dart';
 import 'reset_password_page.dart';
 import '../../ong/ong_home_page.dart';
 import '../../parceiro/parceiro_home_page.dart';
-import '../../home/home_page.dart';
+import '../../admin/admin_dashboard_page.dart'; // ✅ no topo do arquiv
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -41,7 +41,6 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       await _verificarTipoUsuario(user.uid, email);
-
     } on FirebaseAuthException catch (e) {
       String message = 'Erro ao fazer login.';
 
@@ -73,7 +72,10 @@ class _LoginPageState extends State<LoginPage> {
     DocumentSnapshot? doc;
 
     // 1️⃣ Tenta buscar pelo UID
-    final uidDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final uidDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
 
     if (uidDoc.exists) {
       doc = uidDoc;
@@ -98,11 +100,20 @@ class _LoginPageState extends State<LoginPage> {
     final tipo = doc['tipo'] ?? '';
 
     if (tipo == 'admin') {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
+      );
     } else if (tipo == 'ong') {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const OngHomePage()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const OngHomePage()),
+      );
     } else if (tipo == 'parceiro') {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const ParceiroHomePage()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ParceiroHomePage()),
+      );
     } else {
       _showErrorDialog('Tipo de usuário desconhecido.');
     }
@@ -133,10 +144,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/logo.png',
-                height: 120,
-              ),
+              Image.asset('assets/images/logo.png', height: 120),
               const SizedBox(height: 24),
               TextField(
                 controller: _emailController,
