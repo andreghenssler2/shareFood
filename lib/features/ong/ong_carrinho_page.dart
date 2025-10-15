@@ -36,7 +36,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       final firestore = FirebaseFirestore.instance;
       final pedidosRef = firestore.collection('pedidos');
 
-      // 🔹 Verificar estoque antes
+      // 🔹 Verificar estoque antes de confirmar
       for (var item in widget.itensCarrinho) {
         final doc = await firestore.collection('doacoes').doc(item['doacaoId']).get();
         if (!doc.exists) throw Exception('Produto "${item['titulo']}" não encontrado.');
@@ -50,7 +50,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
         }
       }
 
-      // 🔹 Agrupar por parceiro
+      // 🔹 Agrupar pedidos por parceiro
       final Map<String, List<Map<String, dynamic>>> pedidosPorParceiro = {};
       for (var item in widget.itensCarrinho) {
         final parceiroId = item['parceiroId'] ?? 'sem_parceiro';
@@ -71,17 +71,21 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
 
         batch.set(novoPedido, {
           'idOng': user.uid,
-          
           'status': 'Pendente',
+
+          // 🔹 Adiciona dataEntrega antes da dataPedido
+          'dataEntrega': DateTime.now().add(const Duration(days: 7)),
           'dataPedido': DateTime.now(),
+
           'itens': itens.map((i) => {
             'idParceiro': parceiroId,
             'idProduto': i['doacaoId'],
+            'titulo': i['titulo'],
             'quantidade': i['quantidade'],
           }).toList(),
         });
 
-        // 🔹 Atualiza estoque
+        // 🔹 Atualiza estoque (quantidade disponível nas doações)
         for (var item in itens) {
           final ref = firestore.collection('doacoes').doc(item['doacaoId']);
           final doc = await ref.get();
@@ -131,14 +135,15 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                     itemBuilder: (context, index) {
                       final item = widget.itensCarrinho[index];
                       return ListTile(
-                        leading: const Icon(Icons.food_bank,
-                            color: Colors.redAccent),
+                        leading: const Icon(Icons.food_bank, color: Colors.redAccent),
                         title: Text(item['titulo'] ?? 'Sem título'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Quantidade: ${item['quantidade']}'),
-                            Text('Validade: ${item['dataPedido'] ?? '---'}'),
+                            Text(
+                              'Data de Entrega: ${DateTime.now().add(const Duration(days: 7)).toString().substring(0, 10)}',
+                            ),
                           ],
                         ),
                         trailing: IconButton(
@@ -160,8 +165,10 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                         ? const CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2)
                         : const Icon(Icons.check),
-                    label: const Text('Confirmar Pedido',
-                        style: TextStyle(color: Colors.white)),
+                    label: const Text(
+                      'Confirmar Pedido',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
                       minimumSize: const Size(double.infinity, 50),

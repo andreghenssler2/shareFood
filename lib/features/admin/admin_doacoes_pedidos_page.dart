@@ -279,13 +279,13 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage> {
 
                 Color corStatus;
                 switch (status.toLowerCase()) {
-                  case 'pendente':
+                  case 'Pendente':
                     corStatus = Colors.orange;
                     break;
                   case 'em andamento':
                     corStatus = Colors.blueAccent;
                     break;
-                  case 'concluido':
+                  case 'Concluído':
                     corStatus = Colors.green;
                     break;
                   default:
@@ -331,10 +331,10 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage> {
                         }
                       },
                       itemBuilder: (context) => const [
-                        PopupMenuItem(value: 'pendente', child: Text('Pendente')),
-                        PopupMenuItem(value: 'em andamento', child: Text('Em andamento')),
-                        PopupMenuItem(value: 'concluido', child: Text('Concluído')),
-                        PopupMenuItem(value: 'cancelado', child: Text('Cancelado')),
+                        PopupMenuItem(value: 'Pendente', child: Text('Pendente')),
+                        // PopupMenuItem(value: 'em andamento', child: Text('Em andamento')),
+                        PopupMenuItem(value: 'Concluído', child: Text('Concluído')),
+                        PopupMenuItem(value: 'Recusado', child: Text('Recusado')),
                         PopupMenuDivider(),
                         PopupMenuItem(value: 'delete', child: Text('Excluir Pedido')),
                       ],
