@@ -79,7 +79,6 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
             child: StreamBuilder<QuerySnapshot>(
               stream: pedidosRef
                   .where('idOng', isEqualTo: user?.uid)
-                  .orderBy('dataPedido', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -184,9 +183,10 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const SizedBox(height: 4),
-                                  Text('Entrega prevista: $dataEntregaStr',
-                                      style:
-                                          const TextStyle(fontSize: 14)),
+                                  // 🟢 Só mostra a data se não for recusado
+                                  if (status != 'Recusado')
+                                    Text('Entrega prevista: $dataEntregaStr',
+                                        style: const TextStyle(fontSize: 14)),
                                   Text('Status: $status',
                                       style: TextStyle(
                                           fontSize: 14,
@@ -246,7 +246,9 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                                 Text('Validade: ${item['validade']}'),
                                 Text('Quantidade: ${item['quantidade']}'),
                                 const SizedBox(height: 4),
-                                Text('Entrega prevista: $dataEntregaStr'),
+                                // 🟢 Só mostra a data se o pedido não for recusado
+                                if (status != 'Recusado')
+                                  Text('Entrega prevista: $dataEntregaStr'),
                                 Text('Status: $status',
                                     style: TextStyle(
                                         color: cor,
