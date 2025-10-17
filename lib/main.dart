@@ -1,80 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart'; // ⬅️ Adicione isto
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'firebase_options.dart';
-import 'core/theme/app_theme.dart';
-
-// Auth
 import 'features/auth/pages/login_page.dart';
-import 'features/auth/pages/register_page.dart';
-
-// Home
-import 'features/home/home_page.dart';
-
-// Donations
-import 'features/donations/my_donations_page.dart';
-import 'features/donations/create_donation_page.dart';
-
-// Profile
-import 'features/profile/profile_page.dart';
-
-// ONG Panel
-import 'features/ong/ong_painel_page.dart';
-import 'features/ong/ong_carrinho_page.dart';
-
-// Partner Panel
-import 'features/parceiro/parceiro_painel_page.dart';
-import 'features/parceiro/parceiro_criar_doacao_page.dart';
-import 'features/parceiro/editar_doacao_page.dart';
-import 'features/parceiro/historico_pedidos_page.dart';
-
-// ✅ Admin Panel
-import 'features/admin/admin_dashboard_page.dart';
+import 'features/ong/ong_home_page.dart';
+import 'features/parceiro/parceiro_home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const ShareFoodApp());
+  await Firebase.initializeApp();
+  runApp(const MyApp());
 }
 
-class ShareFoodApp extends StatelessWidget {
-  const ShareFoodApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  /// 🔍 Decide qual tela abrir ao iniciar o app
-  Future<Widget> _getInitialPage() async {
-    final user = FirebaseAuth.instance.currentUser;
+  Future<Widget> _getInitialPage(User user) async {
+    // Busca o tipo de usuário no Firestore
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
-    if (user == null) {
-      // 🔸 Nenhum usuário logado
+    final data = doc.data();
+    if (data == null) {
+      await FirebaseAuth.instance.signOut();
       return const LoginPage();
     }
 
-    try {
-      // 🔸 Busca o tipo do usuário no Firestore
-      final doc =
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    final tipo = data['tipo'] ?? '';
 
-      if (!doc.exists) {
-        await FirebaseAuth.instance.signOut();
-        return const LoginPage();
-      }
-
-      final tipo = doc['tipo'] ?? '';
-
-      switch (tipo) {
-        case 'admin':
-          return const AdminDashboardPage();
-        case 'ong':
-          return const OngPainelPage();
-        case 'parceiro':
-          return const ParceiroPainelPage();
-        default:
-          return const HomePage();
-      }
-    } catch (e) {
-      // Em caso de erro, retorna pro login
+    if (tipo == 'parceiro') {
+      return const ParceiroHomePage();
+    } else if (tipo == 'ong') {
+      return const OngHomePage();
+    } else {
       await FirebaseAuth.instance.signOut();
       return const LoginPage();
     }
@@ -83,65 +44,54 @@ class ShareFoodApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'ShareFood',
-      theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
+      title: 'ShareFood',
 
-      // ✅ Inicializa verificando o usuário logado
-      home: FutureBuilder<Widget>(
-        future: _getInitialPage(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(color: Colors.green),
-              ),
-            );
-          }
-          return snapshot.data ?? const LoginPage();
-        },
-      ),
-
-      routes: {
-        '/login': (context) => const LoginPage(),
-        '/register': (context) => const RegisterPage(),
-
-        // 👤 Usuário comum
-        '/home': (context) => const HomePage(),
-        '/my-donations': (context) => const MyDonationsPage(),
-        '/create-donation': (context) => const CreateDonationPage(),
-        '/profile': (context) => const ProfilePage(),
-        '/parceiro_home': (context) => const ParceiroPainelPage(),
-
-        // 🏢 ONG
-        '/ong': (context) => const OngPainelPage(),
-        'ong_carrinho_page': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments
-              as List<Map<String, dynamic>>;
-          return OngCarrinhoPage(itensCarrinho: args);
-        },
-
-        // 🏪 Parceiro
-        '/parceiro': (context) => const ParceiroPainelPage(),
-        '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
-        '/editarDoacao': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
-          return EditarDoacaoPage(doacao: args);
-        },
-        '/historicoDoacoes': (context) => const HistoricoPedidosPage(),
-
-        // 🧑‍💼 Admin
-        '/admin': (context) => const AdminDashboardPage(),
-      },
-
-      // 🌎 Localização (para português)
+      // 🔹 Adicione estas linhas para corrigir o erro do DatePicker e traduzir para português
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('pt', 'BR')],
+      supportedLocales: const [
+        Locale('pt', 'BR'),
+        Locale('en', 'US'),
+      ],
+
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          // Enquanto inicializa
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          // Se não há usuário logado
+          if (!snapshot.hasData) {
+            return const LoginPage();
+          }
+
+          // Usuário logado — carrega tipo do Firestore
+          return FutureBuilder<Widget>(
+            future: _getInitialPage(snapshot.data!),
+            builder: (context, futureSnapshot) {
+              if (futureSnapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (futureSnapshot.hasError) {
+                return const Scaffold(
+                  body: Center(child: Text('Erro ao carregar usuário')),
+                );
+              }
+              return futureSnapshot.data!;
+            },
+          );
+        },
+      ),
     );
   }
 }

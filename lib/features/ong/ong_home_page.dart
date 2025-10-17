@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'ong_perfil_page.dart';
 import 'ong_doacoes_page.dart';
 import 'd_OngParceirosListPage.dart';
@@ -8,6 +9,7 @@ import 'ong_doacoes_recebidas_page.dart';
 
 class OngHomePage extends StatelessWidget {
   const OngHomePage({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +29,29 @@ class OngHomePage extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.green),
-              child: Text(
-                'ShareFood\nMenu da ONG',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+            
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.green,
+              ),
+              accountName: FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('ongs')
+                    .doc(user?.uid)
+                    .get(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return const Text('Carregando...');
+                  final data = snapshot.data!.data() as Map<String, dynamic>?;
+                  return Text(
+                    data?['nome'] ?? 'ONG sem nome',
+                    style: const TextStyle(fontSize: 18),
+                  );
+                },
+              ),
+              accountEmail: Text(user?.email ?? ''),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.volunteer_activism, color: Colors.green, size: 36),
               ),
             ),
 
@@ -54,7 +70,7 @@ class OngHomePage extends StatelessWidget {
               },
             ),
 
-            // 🛒 Carrinho
+            // 🛒 Carrinho (opcionalmente redireciona para mesma tela)
             ListTile(
               leading: const Icon(Icons.shopping_cart),
               title: const Text('Carrinho'),
@@ -84,13 +100,12 @@ class OngHomePage extends StatelessWidget {
               },
             ),
 
-            // 🟨 Lista de Parceiros (igual ao modo do parceiro listar ONGs)
+            // 🟨 Lista de Parceiros
             ListTile(
               leading: const Icon(Icons.store_mall_directory),
               title: const Text('Lista de Parceiros'),
               onTap: () async {
-                Navigator.pop(context); // fecha o menu
-
+                Navigator.pop(context);
                 try {
                   final uid = FirebaseAuth.instance.currentUser?.uid;
                   if (uid == null) {
@@ -102,7 +117,6 @@ class OngHomePage extends StatelessWidget {
                     return;
                   }
 
-                  // 🔎 Busca dados da ONG logada
                   final doc = await FirebaseFirestore.instance
                       .collection('ongs')
                       .doc(uid)
@@ -124,13 +138,13 @@ class OngHomePage extends StatelessWidget {
                   if (ongCidade.isEmpty || ongUF.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Erro: cidade ou UF da ONG não definidos!'),
+                        content:
+                            Text('Erro: cidade ou UF da ONG não definidos!'),
                       ),
                     );
                     return;
                   }
 
-                  // 🚀 Abre tela de Parceiros filtrando pela cidade e UF da ONG
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -157,9 +171,7 @@ class OngHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => OngPerfilPage(
-                      uid: user!.uid,
-                    ),
+                    builder: (context) => OngPerfilPage(uid: user!.uid),
                   ),
                 );
               },
@@ -171,8 +183,11 @@ class OngHomePage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/login');
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               },
             ),
           ],

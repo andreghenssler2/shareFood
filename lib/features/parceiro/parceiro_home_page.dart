@@ -2,59 +2,96 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+
 import 'parceiro_criar_doacao_page.dart';
 import 'doacoes_parceiro_page.dart';
 import 'parceiro_perfil_page.dart';
-import 'parceiro_ongs_page.dart'; // ✅ tela de listagem de ONGs
-import 'historico_pedidos_page.dart'; // ✅ tela de histórico de pedidos
+import 'parceiro_ongs_page.dart';
+import 'historico_pedidos_page.dart';
 
-class ParceiroHomePage extends StatelessWidget {
+class ParceiroHomePage extends StatefulWidget {
   const ParceiroHomePage({super.key});
-  
+
+  @override
+  State<ParceiroHomePage> createState() => _ParceiroHomePageState();
+}
+
+class _ParceiroHomePageState extends State<ParceiroHomePage> {
+  final user = FirebaseAuth.instance.currentUser;
+  String nome = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    if (user == null) return;
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+
+      if (doc.exists) {
+        setState(() {
+          nome = doc.data()?['nome'] ?? 'Parceiro';
+        });
+      }
+    } catch (e) {
+      debugPrint('Erro ao carregar nome do parceiro: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser; // <-- ADICIONE ESTA LINHA
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('Usuário não autenticado.')),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
-        title: const Text(
+        title: Text(
           'Painel do Parceiro',
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
 
-      // 🔹 Menu lateral (Drawer)
+      // ===================== DRAWER =====================
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
                 color: Color.fromRGBO(185, 55, 43, 1),
               ),
-              child: Text(
-                'ShareFood\nMenu do Parceiro',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+              accountName: Text(
+                nome.isNotEmpty ? nome : 'Parceiro',
+                style: const TextStyle(fontSize: 20),
+              ),
+              accountEmail: Text(user!.email ?? ''),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.store, size: 40, color: Colors.red),
               ),
             ),
-             // 🏠 Home
+
+            // 🏠 Home
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
               onTap: () {
-                Navigator.pop(context); // Fecha o menu
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ParceiroHomePage()),
-                );
+                Navigator.pop(context);
               },
             ),
+
             // 🟩 Criar Doação
             ListTile(
               leading: const Icon(Icons.add_box),
@@ -90,18 +127,9 @@ class ParceiroHomePage extends StatelessWidget {
               leading: const Icon(Icons.people_alt),
               title: const Text('Lista de ONGs'),
               onTap: () async {
-                Navigator.pop(context); // fecha o menu
-
+                Navigator.pop(context);
                 try {
-                  final uid = FirebaseAuth.instance.currentUser?.uid;
-                  if (uid == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Erro: parceiro não autenticado!')),
-                    );
-                    return;
-                  }
-
-                  // 🔎 Busca dados do parceiro
+                  final uid = user!.uid;
                   final doc = await FirebaseFirestore.instance
                       .collection('parceiros')
                       .doc(uid)
@@ -120,12 +148,11 @@ class ParceiroHomePage extends StatelessWidget {
 
                   if (parceiroCidade.isEmpty || parceiroUF.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Erro: cidade ou UF do parceiro não definidos!')),
+                      const SnackBar(content: Text('Cidade ou UF do parceiro não definidos!')),
                     );
                     return;
                   }
 
-                  // 🚀 Abre a tela de ONGs
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -148,6 +175,7 @@ class ParceiroHomePage extends StatelessWidget {
               leading: const Icon(Icons.history),
               title: const Text('Histórico de Doações'),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const HistoricoPedidosPage()),
@@ -166,9 +194,7 @@ class ParceiroHomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ParceiroPerfilPage(
-                      uid: FirebaseAuth.instance.currentUser!.uid,
-                    ),
+                    builder: (context) => ParceiroPerfilPage(uid: user!.uid),
                   ),
                 );
               },
@@ -178,24 +204,24 @@ class ParceiroHomePage extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
-              onTap: () {
-                Navigator.pushReplacementNamed(context, '/login');
+              onTap: () async {
+                await FirebaseAuth.instance.signOut();
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               },
             ),
           ],
         ),
       ),
 
-      body: user == null
-    ? const Center(
-        child: Text('Usuário não autenticado.'),
-      )
-    : Padding(
+      // ===================== BODY =====================
+      body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('doacoes')
-              .where('parceiroId', isEqualTo: user.uid)
+              .where('parceiroId', isEqualTo: user!.uid)
               .where('status', isEqualTo: 'ativo')
               .snapshots(),
           builder: (context, snapshot) {
@@ -291,7 +317,6 @@ class ParceiroHomePage extends StatelessWidget {
           },
         ),
       ),
-
     );
   }
 }

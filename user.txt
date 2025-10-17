@@ -18,3 +18,89 @@ git commit -m "Parceiro Lista ONG e Ver Detalhes Ong"
 git push -u origin main
 
 flutter build apk --release
+
+
+🧭 1️⃣ Instale o pacote oficial
+
+No terminal, dentro do diretório do seu projeto, execute:
+
+flutter pub add flutter_launcher_icons
+
+
+ou adicione manualmente no seu pubspec.yaml:
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+
+🎨 2️⃣ Adicione a configuração no pubspec.yaml
+
+Logo abaixo das dependências, adicione o bloco de configuração:
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+
+
+👉 Dicas:
+
+Coloque seu ícone em: assets/icon/app_icon.png
+
+O arquivo deve ser quadrado e com 512x512 px (ideal).
+
+Pode ser .png com fundo transparente.
+
+📁 3️⃣ Crie a pasta e coloque o ícone
+
+Crie a pasta se não existir:
+
+assets/icon/
+
+
+E coloque lá o arquivo app_icon.png.
+
+Exemplo de estrutura:
+
+lib/
+assets/
+  icon/
+    app_icon.png
+pubspec.yaml
+
+⚙️ 4️⃣ Gere os ícones automaticamente
+
+Execute o comando:
+
+flutter pub run flutter_launcher_icons
+
+
+💡 Isso vai gerar automaticamente os ícones nos tamanhos certos para Android e iOS.
+
+🧹 5️⃣ Limpe o cache (opcional, mas recomendado)
+flutter clean
+flutter pub get
+
+🚀 6️⃣ Rode o app e confira o novo ícone
+flutter run
+
+💡 Extra — Personalização avançada
+
+Você pode usar configurações diferentes, por exemplo:
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+
+
+Isso cria ícones adaptáveis com fundo colorido no Android 8+.
+
+✅ Resumo rápido
+Etapa	O que fazer
+1️⃣	Instalar flutter_launcher_icons
+2️⃣	Adicionar config no pubspec.yaml
+3️⃣	Adicionar o ícone em assets/icon/app_icon.png
+4️⃣	Rodar flutter pub run flutter_launcher_icons
+5️⃣	Executar flutter run e ver o resultado

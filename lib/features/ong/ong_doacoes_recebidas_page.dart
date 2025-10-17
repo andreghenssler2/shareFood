@@ -77,9 +77,17 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
           // 🔹 Lista de pedidos
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
+              // ✅ OPÇÃO 1 — Ordenação local (funciona sem índice)
               stream: pedidosRef
                   .where('idOng', isEqualTo: user?.uid)
                   .snapshots(),
+
+              // ✅ OPÇÃO 2 — Ordenação direto no Firestore (requer índice composto)
+              // stream: pedidosRef
+              //     .where('idOng', isEqualTo: user?.uid)
+              //     .orderBy('dataPedido', descending: true)
+              //     .snapshots(),
+
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -91,11 +99,22 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                   );
                 }
 
+                // 🔹 Filtra e ordena localmente
                 var pedidos = snapshot.data!.docs.where((doc) {
                   final status = doc['status'] ?? 'Pendente';
                   if (filtroStatus == 'Todos') return true;
                   return status == filtroStatus;
                 }).toList();
+
+                // 🔹 Ordena por dataPedido (mais recentes primeiro)
+                pedidos.sort((a, b) {
+                  final dataA = a['dataPedido'];
+                  final dataB = b['dataPedido'];
+                  if (dataA is Timestamp && dataB is Timestamp) {
+                    return dataB.compareTo(dataA);
+                  }
+                  return 0;
+                });
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(12),
@@ -107,7 +126,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                         List<Map<String, dynamic>>.from(data['itens'] ?? []);
                     final status = data['status'] ?? 'Pendente';
                     final dataPedido = data['dataPedido'];
-                    final dataPrevistaEntrega = data['dataEntrega'];
+                    final dataEntrega = data['dataEntrega'];
 
                     // 📅 Formatação das datas
                     String dataPedidoStr = 'Data não disponível';
@@ -116,10 +135,10 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                           .format(dataPedido.toDate());
                     }
 
-                    String dataEntregaStr = 'Sem data';
-                    if (dataPrevistaEntrega is Timestamp) {
+                    String dataEntregaStr = '';
+                    if (status != 'Recusado' && dataEntrega is Timestamp) {
                       dataEntregaStr = DateFormat('dd/MM/yyyy')
-                          .format(dataPrevistaEntrega.toDate());
+                          .format(dataEntrega.toDate());
                     }
 
                     // 🎨 Ícone e cor conforme status
@@ -139,7 +158,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                         cor = Colors.orange;
                     }
 
-                    // 🔹 Exibir todos os itens do pedido
+                    // 🔹 Exibir todos os itens do pedido em um único card
                     return FutureBuilder<List<Map<String, dynamic>>>(
                       future: Future.wait(itens.map((item) async {
                         final dados = await _buscarDadosParceiroEProduto(
@@ -149,8 +168,6 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                         return {
                           ...dados,
                           'quantidade': item['quantidade'],
-                          'idParceiro': item['idParceiro'],
-                          'idProduto': item['idProduto'],
                         };
                       })),
                       builder: (context, snapshotItens) {
@@ -161,98 +178,56 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
 
                         final listaItens = snapshotItens.data!;
 
-                        // 🔹 Caso tenha mais de um item → usar ExpansionTile
-                        if (listaItens.length > 1) {
-                          return Card(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                            elevation: 3,
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: ExpansionTile(
-                              leading: Icon(icone, color: cor, size: 32),
-                              title: Text(
-                                'Pedido (${listaItens.length} itens)',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Color.fromRGBO(158, 13, 0, 1),
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 4),
-                                  // 🟢 Só mostra a data se não for recusado
-                                  if (status != 'Recusado')
-                                    Text('Entrega prevista: $dataEntregaStr',
-                                        style: const TextStyle(fontSize: 14)),
-                                  Text('Status: $status',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: cor,
-                                          fontWeight: FontWeight.bold)),
-                                ],
-                              ),
-                              children: listaItens.map((item) {
-                                return ListTile(
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 4),
-                                  title: Text(
-                                    item['titulo'] ?? 'Produto',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Empresa: ${item['empresa']}'),
-                                      Text('Validade: ${item['validade']}'),
-                                      Text(
-                                          'Quantidade: ${item['quantidade']}'),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          );
-                        }
-
-                        // 🔹 Caso tenha apenas 1 item → mostrar direto
-                        final item = listaItens.first;
                         return Card(
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                           elevation: 3,
                           margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(12),
-                            leading: Icon(icone, color: cor, size: 32),
-                            title: Text(
-                              item['titulo'] ?? 'Produto',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Color.fromRGBO(158, 13, 0, 1),
-                              ),
-                            ),
-                            subtitle: Column(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const SizedBox(height: 4),
-                                Text('Empresa: ${item['empresa']}'),
-                                Text('Validade: ${item['validade']}'),
-                                Text('Quantidade: ${item['quantidade']}'),
-                                const SizedBox(height: 4),
-                                // 🟢 Só mostra a data se o pedido não for recusado
-                                if (status != 'Recusado')
-                                  Text('Entrega prevista: $dataEntregaStr'),
-                                Text('Status: $status',
-                                    style: TextStyle(
+                                Row(
+                                  children: [
+                                    Icon(icone, color: cor, size: 32),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Status: $status',
+                                      style: TextStyle(
                                         color: cor,
-                                        fontWeight: FontWeight.bold)),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text('Data do Pedido: $dataPedidoStr'),
+                                if (dataEntregaStr.isNotEmpty)
+                                  Text('Entrega: $dataEntregaStr'),
+                                const Divider(),
+                                ...listaItens.map((item) => Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item['titulo'] ?? 'Produto',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color:
+                                                Color.fromRGBO(158, 13, 0, 1),
+                                          ),
+                                        ),
+                                        Text('Empresa: ${item['empresa']}'),
+                                        Text('Validade: ${item['validade']}'),
+                                        Text(
+                                            'Quantidade: ${item['quantidade']}'),
+                                        const SizedBox(height: 6),
+                                      ],
+                                    )),
                               ],
                             ),
                           ),
