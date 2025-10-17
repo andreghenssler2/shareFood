@@ -11,6 +11,7 @@ import '../../ong/ong_perfil_page.dart';
 import '../../parceiro/parceiro_home_page.dart';
 import '../../parceiro/parceiro_perfil_page.dart';
 import '../../admin/admin_dashboard_page.dart';
+import '../../admin/admin_pefil_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -88,11 +89,24 @@ class _LoginPageState extends State<LoginPage> {
     final tipo = userDoc['tipo'] ?? '';
 
     if (tipo == 'admin') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
-      );
-      return;
+      // 🔍 Verifica se ONG já cadastrou o perfil
+      final ongQuery = await ongsRef.where('uid', isEqualTo: uid).limit(1).get();
+
+      if (ongQuery.docs.isEmpty) {
+        // 🔸 ONG ainda não cadastrada → preencher perfil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AdminPerfilPage(uid: uid), // 🔹 mantém UID
+          ),
+        );
+      } else {
+        // ✅ ONG já cadastrada → vai pra home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
+        );
+      }
     }
 
     if (tipo == 'ong') {
