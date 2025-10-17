@@ -133,6 +133,9 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
           'Meu Perfil',
           style: TextStyle(color: Colors.white),
         ),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
         centerTitle: true,
         actions: [
           IconButton(

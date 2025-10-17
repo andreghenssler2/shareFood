@@ -67,6 +67,10 @@ class _HistoricoDoacoesPageState extends State<HistoricoDoacoesPage> {
       appBar: AppBar(
         title: const Text('Histórico de Doações'),
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
       ),
       body: carregando
           ? const Center(child: CircularProgressIndicator())

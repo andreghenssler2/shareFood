@@ -17,6 +17,10 @@ class OngDetalhesPage extends StatelessWidget {
           'Detalhes da ONG',
           style: TextStyle(color: Colors.white),
         ),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
       ),
       body: FutureBuilder<DocumentSnapshot>(

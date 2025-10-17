@@ -16,7 +16,11 @@ class ParceiroDetalhesPage extends StatelessWidget {
           'Detalhes do Parceiro',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.green,
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance

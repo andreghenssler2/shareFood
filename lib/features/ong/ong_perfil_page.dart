@@ -127,11 +127,15 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF002AB3),
+        backgroundColor: Colors.green,
         title: const Text(
           'Meu Perfil da ONG',
           style: TextStyle(color: Colors.white),
         ),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(

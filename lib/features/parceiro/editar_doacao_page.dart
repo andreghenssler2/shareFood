@@ -87,6 +87,10 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
         centerTitle: true,
       ),
       body: _salvando
@@ -97,32 +101,7 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    // GestureDetector(
-                    //   onTap: _selecionarImagem,
-                    //   child: ClipRRect(
-                    //     borderRadius: BorderRadius.circular(15),
-                    //     child: _imagemSelecionada != null
-                    //         ? Image.file(
-                    //             _imagemSelecionada!,
-                    //             height: 150,
-                    //             width: double.infinity,
-                    //             fit: BoxFit.cover,
-                    //           )
-                    //         : imagemUrl != null && imagemUrl.isNotEmpty
-                    //             ? Image.network(
-                    //                 imagemUrl,
-                    //                 height: 150,
-                    //                 width: double.infinity,
-                    //                 fit: BoxFit.cover,
-                    //               )
-                    //             : Container(
-                    //                 height: 150,
-                    //                 width: double.infinity,
-                    //                 color: Colors.grey[300],
-                    //                 child: const Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
-                    //               ),
-                    //   ),
-                    // ),
+                  
                     const SizedBox(height: 20),
                     TextFormField(
                       controller: _tituloController,

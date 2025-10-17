@@ -123,7 +123,12 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Carrinho', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        backgroundColor: Colors.green,
+        
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
       ),
       body: widget.itensCarrinho.isEmpty
           ? const Center(child: Text('Carrinho vazio'))

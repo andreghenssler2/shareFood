@@ -23,8 +23,13 @@ class OngDoacaoDetalhePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(dados['produto'] ?? 'Detalhes da Doação'),
-        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        title: Text(dados['produto'] ?? 'Detalhes da Doação',style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.green,
+        
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
       ),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: getParceiroInfo(dados['parceiroId']),

@@ -52,8 +52,13 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red.shade900,
-        title: const Text('Parceiros Disponíveis'),
+        backgroundColor: Colors.green,
+        title: const Text('Parceiros Disponíveis',style: TextStyle(color: Colors.white)),
+        
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

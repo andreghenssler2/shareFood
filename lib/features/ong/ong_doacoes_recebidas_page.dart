@@ -45,8 +45,15 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
-        title: const Text('Doações Recebidas'),
+        backgroundColor: Colors.green,
+        title: const Text(
+          'Doações Recebidas',
+          style: TextStyle(color: Colors.white),
+        ),
+        
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
         centerTitle: true,
       ),
       body: Column(

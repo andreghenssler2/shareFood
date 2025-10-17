@@ -196,6 +196,10 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
           'Histórico de Pedidos',
           style: TextStyle(color: Colors.white),
         ),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // 🔹 muda a cor da seta para branca
+        ),
+        centerTitle: true,
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
