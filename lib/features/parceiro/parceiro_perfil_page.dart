@@ -36,6 +36,22 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
+  // 🔹 Máscaras para telefone (8 e 9 dígitos)
+  final telefoneMask8 = MaskTextInputFormatter(
+    mask: '(##) ####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  final telefoneMask9 = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  MaskTextInputFormatter get _telefoneMask {
+    final numeros = _telefoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    return numeros.length > 10 ? telefoneMask9 : telefoneMask8;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -133,9 +149,7 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
           'Meu Perfil',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         actions: [
           IconButton(
@@ -187,8 +201,9 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
                       ? const Icon(Icons.lock, color: Colors.grey)
                       : null,
                   filled: !_isEditing || _cnpjBloqueado,
-                  fillColor:
-                      !_isEditing || _cnpjBloqueado ? Colors.grey.shade100 : null,
+                  fillColor: !_isEditing || _cnpjBloqueado
+                      ? Colors.grey.shade100
+                      : null,
                 ),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Informe o CNPJ';
@@ -198,11 +213,42 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              _buildTextField(
-                label: 'Telefone',
+              // 🔹 Telefone com máscara dinâmica
+              TextFormField(
                 controller: _telefoneController,
-                enabled: _isEditing,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [_telefoneMask],
+                enabled: _isEditing,
+                decoration: const InputDecoration(
+                  labelText: 'Telefone',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  if (v == null || v.isEmpty) return 'Informe o telefone';
+                  final numeros =
+                      v.replaceAll(RegExp(r'[^0-9]'), '');
+                  if (numeros.length < 10 || numeros.length > 11) {
+                    return 'Telefone inválido';
+                  }
+                  return null;
+                },
+                onChanged: (value) {
+                  final numeros =
+                      value.replaceAll(RegExp(r'[^0-9]'), '');
+                  final novaMascara =
+                      numeros.length > 10 ? telefoneMask9 : telefoneMask8;
+
+                  if (_telefoneMask.getMask() != novaMascara.getMask()) {
+                    final textoAtual = _telefoneController.text;
+                    final pos = _telefoneController.selection;
+                    setState(() {
+                      _telefoneController.value = TextEditingValue(
+                        text: novaMascara.maskText(textoAtual),
+                        selection: pos,
+                      );
+                    });
+                  }
+                },
               ),
               const SizedBox(height: 24),
 

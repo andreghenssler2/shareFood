@@ -38,11 +38,20 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  // ✅ Máscara Telefone (formato (51) 99999-9999)
-  final telefoneMask = MaskTextInputFormatter(
+  // ✅ Máscaras dinâmicas de telefone
+  final telefoneMask8 = MaskTextInputFormatter(
+    mask: '(##) ####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+  final telefoneMask9 = MaskTextInputFormatter(
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
   );
+
+  MaskTextInputFormatter get _telefoneMask {
+    final numeros = _telefoneController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    return numeros.length > 10 ? telefoneMask9 : telefoneMask8;
+  }
 
   @override
   void initState() {
@@ -103,7 +112,6 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
         _cnpjBloqueado = true;
       });
 
-      // ✅ Redireciona para tela principal
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const OngHomePage()),
@@ -132,9 +140,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
           'Meu Perfil da ONG',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         actions: [
           IconButton(
@@ -142,11 +148,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
               _isEditing ? Icons.cancel : Icons.edit,
               color: Colors.white,
             ),
-            onPressed: () {
-              setState(() {
-                _isEditing = !_isEditing;
-              });
-            },
+            onPressed: () => setState(() => _isEditing = !_isEditing),
           ),
         ],
       ),
@@ -164,6 +166,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                     v == null || v.isEmpty ? 'Informe o nome da ONG' : null,
               ),
               const SizedBox(height: 16),
+
               _buildTextField(
                 label: 'Responsável',
                 controller: _responsavelController,
@@ -172,6 +175,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                     v == null || v.isEmpty ? 'Informe o responsável' : null,
               ),
               const SizedBox(height: 16),
+
               TextFormField(
                 controller: _cnpjController,
                 inputFormatters: [cnpjMask],
@@ -195,12 +199,12 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              // ✅ TELEFONE FORMATADO
+              // ✅ TELEFONE COM MÁSCARA DINÂMICA
               TextFormField(
                 controller: _telefoneController,
-                inputFormatters: [telefoneMask],
-                enabled: _isEditing,
                 keyboardType: TextInputType.phone,
+                inputFormatters: [_telefoneMask],
+                enabled: _isEditing,
                 decoration: const InputDecoration(
                   labelText: 'Telefone',
                   border: OutlineInputBorder(),
@@ -208,8 +212,29 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                 ),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Informe o telefone';
-                  if (v.length < 15) return 'Telefone incompleto';
+                  final numeros =
+                      v.replaceAll(RegExp(r'[^0-9]'), '');
+                  if (numeros.length < 10 || numeros.length > 11) {
+                    return 'Telefone inválido';
+                  }
                   return null;
+                },
+                onChanged: (value) {
+                  final numeros =
+                      value.replaceAll(RegExp(r'[^0-9]'), '');
+                  final novaMascara =
+                      numeros.length > 10 ? telefoneMask9 : telefoneMask8;
+
+                  if (_telefoneMask.getMask() != novaMascara.getMask()) {
+                    final textoAtual = _telefoneController.text;
+                    final pos = _telefoneController.selection;
+                    setState(() {
+                      _telefoneController.value = TextEditingValue(
+                        text: novaMascara.maskText(textoAtual),
+                        selection: pos,
+                      );
+                    });
+                  }
                 },
               ),
 
@@ -219,12 +244,14 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
+
               _buildTextField(
                 label: 'Rua',
                 controller: _ruaController,
                 enabled: _isEditing,
               ),
               const SizedBox(height: 12),
+
               _buildTextField(
                 label: 'Número',
                 controller: _numeroController,
@@ -232,12 +259,14 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 12),
+
               _buildTextField(
                 label: 'Cidade',
                 controller: _cidadeController,
                 enabled: _isEditing,
               ),
               const SizedBox(height: 12),
+
               _buildTextField(
                 label: 'UF',
                 controller: _ufController,
@@ -250,18 +279,23 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
                   return null;
                 },
               ),
+
               const SizedBox(height: 24),
+
               if (_isEditing)
                 ElevatedButton.icon(
                   onPressed: _salvarPerfil,
-                  icon: const Icon(Icons.save),
+                  icon: const Icon(Icons.save, color: Colors.white),
                   label: const Text('Salvar Alterações'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                 ),
+
               const SizedBox(height: 16),
+
               if (user?.email != null)
                 Text(
                   'Email: ${user!.email}',

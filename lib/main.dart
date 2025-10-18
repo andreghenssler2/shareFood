@@ -8,10 +8,12 @@ import 'features/ong/ong_home_page.dart';
 import 'features/parceiro/parceiro_home_page.dart';
 import 'features/admin/admin_dashboard_page.dart';
 import 'features/parceiro/editar_doacao_page.dart';
+// import 'features/notifications/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // await NotificacaoService.inicializar(); 
   runApp(const MyApp());
 }
 

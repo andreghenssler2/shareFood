@@ -232,6 +232,7 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
                 }
               } catch (_) {}
             }
+            
 
             if (proximasDoacoes.isEmpty) {
               return const Center(
