@@ -55,9 +55,9 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
-        title: Text(
+        title: const Text(
           'Painel do Parceiro',
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -82,47 +82,29 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
                 child: Icon(Icons.store, size: 40, color: Colors.red),
               ),
             ),
-
-            // 🏠 Home
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              onTap: () => Navigator.pop(context),
             ),
-
-            // 🟩 Criar Doação
             ListTile(
               leading: const Icon(Icons.add_box),
               title: const Text('Criar Doação'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ParceiroCriarDoacaoPage(),
-                  ),
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const ParceiroCriarDoacaoPage()));
               },
             ),
-
-            // 🟦 Minhas Doações
             ListTile(
               leading: const Icon(Icons.inventory_2),
               title: const Text('Minhas Doações'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DoacoesParceiroPage(),
-                  ),
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const DoacoesParceiroPage()));
               },
             ),
-
-            // 🟨 Lista de ONGs
             ListTile(
               leading: const Icon(Icons.people_alt),
               title: const Text('Lista de ONGs'),
@@ -169,23 +151,16 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
                 }
               },
             ),
-
-            // 🕓 Histórico
             ListTile(
               leading: const Icon(Icons.history),
               title: const Text('Histórico de Doações'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HistoricoPedidosPage()),
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const HistoricoPedidosPage()));
               },
             ),
-
             const Divider(),
-
-            // 👤 Perfil
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Meu Perfil'),
@@ -194,13 +169,11 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ParceiroPerfilPage(uid: user!.uid),
+                    builder: (_) => ParceiroPerfilPage(uid: user!.uid),
                   ),
                 );
               },
             ),
-
-            // 🚪 Sair
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),
@@ -222,7 +195,7 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
           stream: FirebaseFirestore.instance
               .collection('doacoes')
               .where('parceiroId', isEqualTo: user!.uid)
-              .where('status', isEqualTo: 'ativo')
+              .where('ativo', isEqualTo: true)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -238,10 +211,9 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
               );
             }
 
-            final doacoes = snapshot.data!.docs;
-            final proximasDoacoes = <Map<String, dynamic>>[];
+            final List<Map<String, dynamic>> proximasDoacoes = [];
 
-            for (var doc in doacoes) {
+            for (var doc in snapshot.data!.docs) {
               final data = doc.data() as Map<String, dynamic>;
               final titulo = data['titulo'] ?? 'Sem nome';
               final validadeStr = data['validade'] ?? '';
@@ -258,9 +230,7 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
                     'dias': diffDays,
                   });
                 }
-              } catch (_) {
-                // ignora datas inválidas
-              }
+              } catch (_) {}
             }
 
             if (proximasDoacoes.isEmpty) {
@@ -275,7 +245,6 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
             proximasDoacoes.sort((a, b) => a['dias'].compareTo(b['dias']));
 
             return ListView.builder(
-              padding: const EdgeInsets.all(12),
               itemCount: proximasDoacoes.length,
               itemBuilder: (context, index) {
                 final item = proximasDoacoes[index];
@@ -283,32 +252,43 @@ class _ParceiroHomePageState extends State<ParceiroHomePage> {
                 final validade = item['validade'];
                 final dias = item['dias'];
 
-                IconData icon;
+                Color bgColor;
                 Color iconColor;
 
-                if (dias <= 7) {
-                  icon = Icons.error_outline;
-                  iconColor = Colors.red;
+                if (dias <= 1) {
+                  bgColor = const Color(0xFF800000); // Bordô forte
+                  iconColor = Colors.white;
+                } else if (dias <= 7) {
+                  bgColor = Colors.red.shade300;
+                  iconColor = Colors.red.shade900;
+                } else if (dias <= 15) {
+                  bgColor = Colors.yellow.shade200;
+                  iconColor = Colors.orange.shade800;
                 } else {
-                  icon = Icons.warning_amber_rounded;
-                  iconColor = Colors.orange;
+                  bgColor = Colors.white;
+                  iconColor = Colors.grey;
                 }
 
                 return Card(
-                  color: const Color(0xFFF8F8F8),
+                  color: bgColor,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: ListTile(
-                    leading: Icon(icon, color: iconColor, size: 30),
+                    leading: Icon(Icons.warning_amber_rounded,
+                        color: iconColor, size: 32),
                     title: Text(
                       titulo,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        color: dias <= 1 ? Colors.white : Colors.black,
                       ),
                     ),
                     subtitle: Text(
                       'Validade: $validade\nRestam: ${dias < 0 ? 0 : dias} dias',
+                      style: TextStyle(
+                        color: dias <= 1 ? Colors.white70 : Colors.black87,
+                      ),
                     ),
                   ),
                 );

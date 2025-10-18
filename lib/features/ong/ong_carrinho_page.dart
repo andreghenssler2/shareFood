@@ -38,15 +38,19 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
 
       // 🔹 Verificar estoque antes de confirmar
       for (var item in widget.itensCarrinho) {
-        final doc = await firestore.collection('doacoes').doc(item['doacaoId']).get();
-        if (!doc.exists) throw Exception('Produto "${item['titulo']}" não encontrado.');
+        final doc =
+            await firestore.collection('doacoes').doc(item['doacaoId']).get();
+        if (!doc.exists) {
+          throw Exception('Produto "${item['titulo']}" não encontrado.');
+        }
 
         final dados = doc.data()!;
-        final int disponivel = dados['quantidade'] ?? 0;
-        final int solicitada = item['quantidade'] ?? 0;
+        final int disponivel = ((dados['quantidade'] ?? 0) as num).toInt();
+        final int solicitada = ((item['quantidade'] ?? 0) as num).toInt();
 
         if (solicitada > disponivel) {
-          throw Exception('Quantidade insuficiente de "${item['titulo']}".');
+          throw Exception(
+              'Quantidade insuficiente de "${item['titulo']}". (Disponível: $disponivel)');
         }
       }
 
@@ -72,17 +76,17 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
         batch.set(novoPedido, {
           'idOng': user.uid,
           'status': 'Pendente',
-
-          // 🔹 Adiciona dataEntrega antes da dataPedido
           'dataEntrega': DateTime.now().add(const Duration(days: 7)),
           'dataPedido': DateTime.now(),
-
-          'itens': itens.map((i) => {
-            'idParceiro': parceiroId,
-            'idProduto': i['doacaoId'],
-            'titulo': i['titulo'],
-            'quantidade': i['quantidade'],
-          }).toList(),
+          'itens': itens
+              .map((i) => {
+                    'idParceiro': parceiroId,
+                    'idProduto': i['doacaoId'],
+                    'titulo': i['titulo'],
+                    // 🔧 Garantir que a quantidade seja salva como int
+                    'quantidade': ((i['quantidade'] ?? 0) as num).toInt(),
+                  })
+              .toList(),
         });
 
         // 🔹 Atualiza estoque (quantidade disponível nas doações)
@@ -90,8 +94,9 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
           final ref = firestore.collection('doacoes').doc(item['doacaoId']);
           final doc = await ref.get();
           if (doc.exists) {
-            final atual = (doc['quantidade'] ?? 0).toInt();
-            final novaQtd = atual - (item['quantidade'] ?? 0);
+            final int atual = ((doc['quantidade'] ?? 0) as num).toInt();
+            final int diminuir = ((item['quantidade'] ?? 0) as num).toInt();
+            final int novaQtd = atual - diminuir;
             batch.update(ref, {'quantidade': novaQtd < 0 ? 0 : novaQtd});
           }
         }
@@ -124,10 +129,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       appBar: AppBar(
         title: const Text('Carrinho', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green,
-        
-        iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
       ),
       body: widget.itensCarrinho.isEmpty
@@ -140,7 +142,8 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                     itemBuilder: (context, index) {
                       final item = widget.itensCarrinho[index];
                       return ListTile(
-                        leading: const Icon(Icons.food_bank, color: Colors.redAccent),
+                        leading: const Icon(Icons.food_bank,
+                            color: Colors.redAccent),
                         title: Text(item['titulo'] ?? 'Sem título'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +155,8 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                           ],
                         ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
+                          icon:
+                              const Icon(Icons.delete, color: Colors.redAccent),
                           onPressed: () {
                             setState(() {
                               widget.itensCarrinho.removeAt(index);

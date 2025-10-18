@@ -46,66 +46,72 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
   }
 
   Future<void> perguntarQuantidadeEAdicionar(
-      Map<String, dynamic> dados, String doacaoId) async {
-    final TextEditingController quantidadeController = TextEditingController();
+    Map<String, dynamic> dados, String doacaoId) async {
+  final TextEditingController quantidadeController = TextEditingController();
 
-    await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Adicionar "${dados['titulo']}" ao carrinho'),
-        content: TextField(
-          controller: quantidadeController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Quantidade desejada',
-            hintText: 'Digite a quantidade',
-          ),
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Adicionar "${dados['titulo']}" ao carrinho'),
+      content: TextField(
+        controller: quantidadeController,
+        keyboardType: TextInputType.number,
+        decoration: const InputDecoration(
+          labelText: 'Quantidade desejada',
+          hintText: 'Digite a quantidade',
         ),
-        actions: [
-          TextButton(
-            child: const Text('Cancelar'),
-            onPressed: () => Navigator.pop(context),
-          ),
-          TextButton(
-            child: const Text('Adicionar'),
-            onPressed: () {
-              final int qtdDesejada =
-                  int.tryParse(quantidadeController.text) ?? 0;
-              final int qtdDisponivel = dados['quantidade'] ?? 0;
-
-              if (qtdDesejada <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Informe uma quantidade válida!')),
-                );
-                return;
-              }
-
-              if (qtdDesejada > qtdDisponivel) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                        'Quantidade insuficiente! Disponível: $qtdDisponivel unidades.'),
-                  ),
-                );
-                return;
-              }
-
-              adicionarAoCarrinho({
-                'titulo': dados['titulo'] ?? 'Sem título',
-                'quantidade': qtdDesejada,
-                'dataEntrega': dados['dataValidade'] ?? '',
-                'parceiroId': dados['parceiroId'] ?? 'Desconhecido',
-                'doacaoId': doacaoId,
-              });
-
-              Navigator.pop(context);
-            },
-          ),
-        ],
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          child: const Text('Cancelar'),
+          onPressed: () => Navigator.pop(context),
+        ),
+        TextButton(
+          child: const Text('Adicionar'),
+          onPressed: () {
+            final num qtdDesejada =
+                num.tryParse(quantidadeController.text) ?? 0;
 
+            // 🔧 Garante que a quantidade vinda do Firestore seja numérica
+            final num qtdDisponivel = (dados['quantidade'] is num)
+                ? dados['quantidade']
+                : num.tryParse(dados['quantidade'].toString()) ?? 0;
+
+            if (qtdDesejada <= 0) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Informe uma quantidade válida!')),
+              );
+              return;
+            }
+
+            if (qtdDesejada > qtdDisponivel) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Quantidade insuficiente! Disponível: $qtdDisponivel unidades.',
+                  ),
+                ),
+              );
+              return;
+            }
+
+            adicionarAoCarrinho({
+              'titulo': dados['titulo'] ?? 'Sem título',
+              'quantidade': qtdDesejada,
+              'dataEntrega': dados['dataValidade'] ?? '',
+              'parceiroId': dados['parceiroId'] ?? 'Desconhecido',
+              'doacaoId': doacaoId,
+            });
+
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+  );
+}
+  
+  
   String _formatarData(dynamic data) {
     if (data == null) return '---';
 
@@ -132,9 +138,7 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
           'Doações Disponíveis',
           style: TextStyle(color: Colors.white),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: Colors.green,
         actions: [

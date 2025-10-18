@@ -7,6 +7,7 @@ import 'features/auth/pages/login_page.dart';
 import 'features/ong/ong_home_page.dart';
 import 'features/parceiro/parceiro_home_page.dart';
 import 'features/admin/admin_dashboard_page.dart';
+import 'features/parceiro/editar_doacao_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,6 +61,14 @@ class MyApp extends StatelessWidget {
         Locale('pt', 'BR'),
         Locale('en', 'US'),
       ],
+
+      // 🔹 Rotas nomeadas
+      routes: {
+        '/editarDoacao': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return EditarDoacaoPage(doacao: args);
+        },
+      },
 
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),

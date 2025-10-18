@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:async/async.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // ✅ para logout
 
 // ✅ Importa as telas específicas
 import 'admin_users_page.dart';
 import 'admin_ongs_page.dart';
 import 'admin_parceiros_page.dart';
 import 'admin_doacoes_pedidos_page.dart';
-import 'admin_reports_page.dart'; // ✅ agora já integrado!
+import 'admin_reports_page.dart';
+import '../auth/pages/login_page.dart'; // ✅ ajuste o caminho se necessário
 
 class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({super.key});
+
+  Future<void> _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +29,42 @@ class AdminDashboardPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Painel do Administrador'),
+        title: const Text(
+          'Painel do Administrador',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
+        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            tooltip: 'Sair',
+            onPressed: () async {
+              final sair = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Confirmar saída'),
+                  content: const Text('Deseja realmente sair da conta?'),
+                  actions: [
+                    TextButton(
+                      child: const Text('Cancelar'),
+                      onPressed: () => Navigator.pop(context, false),
+                    ),
+                    TextButton(
+                      child: const Text('Sair'),
+                      onPressed: () => Navigator.pop(context, true),
+                    ),
+                  ],
+                ),
+              );
+              if (sair == true) {
+                _logout(context);
+              }
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<List<QuerySnapshot>>(
-        // 🔥 Junta as streams das coleções reais do seu Firestore
         stream: StreamZip<QuerySnapshot>([
           firestore.collection('users').snapshots(),
           firestore.collection('ongs').snapshots(),
@@ -40,18 +82,15 @@ class AdminDashboardPage extends StatelessWidget {
           }
 
           final data = snapshot.data!;
-
           final usersCount = data[0].docs.length;
           final ongsCount = data[1].docs.length;
           final partnersCount = data[2].docs.length;
 
-          // 🔹 Contagem de doações (ativas e inativas)
           final doacoesDocs = data[3].docs;
           final activeDoacoes =
               doacoesDocs.where((d) => (d.data() as Map<String, dynamic>)['ativo'] == true).length;
           final totalDoacoes = doacoesDocs.length;
 
-          // 🔹 Contagem de pedidos (pendentes, concluídos, etc.)
           final pedidosDocs = data[4].docs;
           final pedidosPendentes = pedidosDocs
               .where((p) => ((p.data() as Map<String, dynamic>)['status'] ?? '')
@@ -72,7 +111,7 @@ class AdminDashboardPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // 📊 Cards de resumo com dados reais
+                // 📊 Cards de resumo
                 LayoutBuilder(
                   builder: (context, constraints) {
                     int crossCount = constraints.maxWidth > 800
@@ -141,7 +180,6 @@ class AdminDashboardPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // 👥 Usuários
                 _buildActionButton(
                   icon: Icons.manage_accounts,
                   label: 'Gerenciar Usuários',
@@ -153,8 +191,6 @@ class AdminDashboardPage extends StatelessWidget {
                     );
                   },
                 ),
-
-                // 🏢 ONGs
                 _buildActionButton(
                   icon: Icons.handshake_outlined,
                   label: 'Gerenciar ONGs',
@@ -166,8 +202,6 @@ class AdminDashboardPage extends StatelessWidget {
                     );
                   },
                 ),
-
-                // 🏪 Parceiros
                 _buildActionButton(
                   icon: Icons.store_mall_directory_outlined,
                   label: 'Gerenciar Parceiros',
@@ -179,8 +213,6 @@ class AdminDashboardPage extends StatelessWidget {
                     );
                   },
                 ),
-
-                // 📦 Doações e Pedidos
                 _buildActionButton(
                   icon: Icons.receipt_long_outlined,
                   label: 'Doações e Pedidos',
@@ -192,8 +224,6 @@ class AdminDashboardPage extends StatelessWidget {
                     );
                   },
                 ),
-
-                // 📊 Relatórios
                 _buildActionButton(
                   icon: Icons.insert_chart_outlined,
                   label: 'Relatórios e Estatísticas',
@@ -213,7 +243,6 @@ class AdminDashboardPage extends StatelessWidget {
     );
   }
 
-  // 🧱 Card de resumo
   Widget _buildSummaryCard({
     required String title,
     required String value,
@@ -251,7 +280,6 @@ class AdminDashboardPage extends StatelessWidget {
     );
   }
 
-  // 🧩 Botão de ação
   Widget _buildActionButton({
     required IconData icon,
     required String label,
