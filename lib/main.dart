@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'features/auth/pages/login_page.dart';
 import 'features/ong/ong_home_page.dart';
 import 'features/parceiro/parceiro_home_page.dart';
+import 'features/admin/admin_dashboard_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,8 @@ class MyApp extends StatelessWidget {
       return const ParceiroHomePage();
     } else if (tipo == 'ong') {
       return const OngHomePage();
+    } else if (tipo == 'admin') {
+      return const AdminDashboardPage();
     } else {
       await FirebaseAuth.instance.signOut();
       return const LoginPage();

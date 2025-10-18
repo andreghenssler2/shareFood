@@ -77,6 +77,7 @@ class _LoginPageState extends State<LoginPage> {
     final usersRef = FirebaseFirestore.instance.collection('users');
     final ongsRef = FirebaseFirestore.instance.collection('ongs');
     final parceirosRef = FirebaseFirestore.instance.collection('parceiros');
+    final adminRef = FirebaseFirestore.instance.collection('admin');
 
     DocumentSnapshot userDoc = await usersRef.doc(uid).get();
 
@@ -89,8 +90,8 @@ class _LoginPageState extends State<LoginPage> {
     final tipo = userDoc['tipo'] ?? '';
 
     if (tipo == 'admin') {
-      // 🔍 Verifica se ONG já cadastrou o perfil
-      final ongQuery = await ongsRef.where('uid', isEqualTo: uid).limit(1).get();
+// 🔍 Verifica se ONG já cadastrou o perfil
+      final ongQuery = await adminRef.where('uid', isEqualTo: uid).limit(1).get();
 
       if (ongQuery.docs.isEmpty) {
         // 🔸 ONG ainda não cadastrada → preencher perfil
@@ -107,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
         );
       }
+      return;
     }
 
     if (tipo == 'ong') {
