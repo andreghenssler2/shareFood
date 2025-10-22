@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "935775560239",
+    "project_id": "sharefoodfaccat",
+    "storage_bucket": "sharefoodfaccat.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:935775560239:android:8acdb524c42829b3f6dcda",
+        "android_client_info": {
+          "package_name": "com.example.sharefood"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcekmNK9uNNmUJ4HjUAHFo_XWbevsfxMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
