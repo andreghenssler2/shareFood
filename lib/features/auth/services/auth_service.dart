@@ -5,7 +5,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // 🔹 Criar conta
+  // Criar conta
   Future<User?> signUp(String email, String senha, String tipo) async {
     final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -14,7 +14,7 @@ class AuthService {
 
     final user = userCredential.user;
     if (user != null) {
-      // 🔹 Salvar no Firestore o tipo de usuário
+      // Salvar no Firestore o tipo de usuário
       await _firestore.collection('users').doc(user.uid).set({
         'email': email,
         'tipo': tipo, // admin / ong / parceiro
@@ -25,7 +25,7 @@ class AuthService {
     return user;
   }
 
-  // 🔹 Login
+  // Login
   Future<User?> signIn(String email, String senha) async {
     final userCredential = await _auth.signInWithEmailAndPassword(
       email: email,
@@ -34,11 +34,11 @@ class AuthService {
     return userCredential.user;
   }
 
-  // 🔹 Logout
+  // Logout
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-  // 🔹 Usuário atual
+  // Usuário atual
   User? get currentUser => _auth.currentUser;
 }

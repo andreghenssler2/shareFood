@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
             },
           },
 
-          // 🔥 Aqui está o ponto principal
+          // Aqui está o ponto principal
           home: StreamBuilder<User?>(
             stream: FirebaseAuth.instance.userChanges(),
             builder: (context, snapshot) {

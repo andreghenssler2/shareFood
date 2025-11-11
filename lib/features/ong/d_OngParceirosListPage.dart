@@ -29,7 +29,7 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
     _cidadeFiltro = widget.ongCidade;
   }
 
-  /// 🔍 Consulta dinâmica com filtros de nome, UF e cidade
+  // Consulta dinâmica com filtros de nome, UF e cidade
   Stream<QuerySnapshot> _buscarParceiros() {
     var query = FirebaseFirestore.instance
         .collection('parceiros')
@@ -56,7 +56,7 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
         title: const Text('Parceiros Disponíveis',style: TextStyle(color: Colors.white)),
         
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, // muda a cor da seta para branca
         ),
         centerTitle: true,
       ),
@@ -64,7 +64,7 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-            // 🔎 Campo de busca
+            // Campo de busca
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -82,7 +82,7 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
             ),
             const SizedBox(height: 12),
 
-            // 🗺️ Filtros de UF e Cidade
+            // Filtros de UF e Cidade
             Row(
               children: [
                 Expanded(
@@ -125,7 +125,7 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
             ),
             const SizedBox(height: 16),
 
-            // 📋 Lista de parceiros
+            // Lista de parceiros
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: _buscarParceiros(),
@@ -167,7 +167,7 @@ class _OngParceirosListPageState extends State<OngParceirosListPage> {
                           subtitle: Text('$cidade - $uf'),
                           trailing: const Icon(Icons.arrow_forward_ios),
                           onTap: () {
-                            final parceiroId = docs[index].id; // 🔹 ID do documento Firestore
+                            final parceiroId = docs[index].id; //  ID do documento Firestore
                             Navigator.push(
                               context,
                               MaterialPageRoute(

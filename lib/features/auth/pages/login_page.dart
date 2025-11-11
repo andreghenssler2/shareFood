@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  /// 🔍 Verifica o tipo e redireciona (mantido como no código original)
+  // Verifica o tipo e redireciona (mantido como no código original)
   Future<void> _verificarTipoUsuario(String uid, String email) async {
     final usersRef = FirebaseFirestore.instance.collection('users');
     final ongsRef = FirebaseFirestore.instance.collection('ongs');

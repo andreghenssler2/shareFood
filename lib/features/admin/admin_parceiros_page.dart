@@ -172,7 +172,7 @@ class _AdminParceirosPageState extends State<AdminParceirosPage> {
     );
   }
 
-  // 🔍 Detalhes do parceiro
+  // Detalhes do parceiro
   void _mostrarDetalhes(BuildContext context, Map<String, dynamic> data) {
     final endereco = data['endereco'] as Map<String, dynamic>? ?? {};
 
@@ -207,7 +207,7 @@ class _AdminParceirosPageState extends State<AdminParceirosPage> {
     );
   }
 
-  // 🔒 Diálogo de confirmação
+  // Diálogo de confirmação
   Future<bool> _confirmAction(BuildContext context, String title, String message,
       {bool danger = false}) async {
     return await showDialog<bool>(
@@ -240,7 +240,7 @@ class _AdminParceirosPageState extends State<AdminParceirosPage> {
         false;
   }
 
-  // 💬 feedback pós-ação
+  //feedback pós-ação
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

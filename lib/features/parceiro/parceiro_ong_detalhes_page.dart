@@ -18,7 +18,7 @@ class OngDetalhesPage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, //  muda a cor da seta para branca
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
@@ -56,7 +56,7 @@ class OngDetalhesPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🏷️ Nome da ONG
+                    //  Nome da ONG
                     Text(
                       data['nome'] ?? 'Sem nome',
                       style: const TextStyle(
@@ -67,19 +67,19 @@ class OngDetalhesPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    // 👤 Responsável
+                    //  Responsável
                     _infoRow('Responsável', data['responsavel']),
                     const SizedBox(height: 8),
 
-                    // 📧 Email
+                    //  Email
                     _infoRow('E-mail', data['email']),
                     const SizedBox(height: 8),
 
-                    // ☎️ Telefone
+                    //  Telefone
                     _infoRow('Telefone', data['telefone']),
                     const SizedBox(height: 8),
 
-                    // 🏙️ Endereço completo
+                    //  Endereço completo
                     const Divider(height: 24, thickness: 1),
                     const Text(
                       'Endereço',
@@ -100,12 +100,12 @@ class OngDetalhesPage extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 16),
-                    // 🆔 CNPJ
+                    //  CNPJ
                     if (data['cnpj'] != null)
                       _infoRow('CNPJ', data['cnpj']),
                     const SizedBox(height: 16),
 
-                    // 🕓 Atualizado em (formatado)
+                    //  Atualizado em (formatado)
                     if (data['atualizadoEm'] != null)
                       _infoRow(
                         'Atualizado em',
@@ -115,13 +115,13 @@ class OngDetalhesPage extends StatelessWidget {
                     const SizedBox(height: 24),
                     const Divider(height: 24),
 
-                    // 🔘 Botões de ação
+                    //  Botões de ação
                     Row(
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              // 👉 Substitua pela rota da página de doações da ONG
+                              //  Substitua pela rota da página de doações da ONG
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
@@ -198,7 +198,7 @@ class OngDetalhesPage extends StatelessWidget {
     );
   }
 
-  // 🔹 Exibe campo formatado
+  //  Exibe campo formatado
   Widget _infoRow(String label, String? value) {
     if (value == null || value.isEmpty) return const SizedBox.shrink();
 
@@ -225,7 +225,7 @@ class OngDetalhesPage extends StatelessWidget {
     );
   }
 
-  // 🔹 Formata Timestamp (Firestore) em DD/MM/AAAA às HH:mm
+  //  Formata Timestamp (Firestore) em DD/MM/AAAA às HH:mm
   String _formatarData(dynamic timestamp) {
     try {
       if (timestamp is Timestamp) {

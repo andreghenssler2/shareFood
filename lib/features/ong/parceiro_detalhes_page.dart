@@ -17,7 +17,7 @@ class ParceiroDetalhesPage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, // muda a cor da seta para branca
         ),
         centerTitle: true,
         backgroundColor: Colors.green,

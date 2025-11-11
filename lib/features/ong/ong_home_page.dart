@@ -55,7 +55,7 @@ class OngHomePage extends StatelessWidget {
               ),
             ),
 
-            // 🟩 Doações Disponíveis
+            // Doações Disponíveis
             ListTile(
               leading: const Icon(Icons.list_alt),
               title: const Text('Doações Disponíveis'),
@@ -70,7 +70,7 @@ class OngHomePage extends StatelessWidget {
               },
             ),
 
-            // 🛒 Carrinho (opcionalmente redireciona para mesma tela)
+            // Carrinho (opcionalmente redireciona para mesma tela)
             ListTile(
               leading: const Icon(Icons.shopping_cart),
               title: const Text('Carrinho'),
@@ -85,7 +85,7 @@ class OngHomePage extends StatelessWidget {
               },
             ),
 
-            // ✅ Doações Recebidas
+            // Doações Recebidas
             ListTile(
               leading: const Icon(Icons.check_circle),
               title: const Text('Doações Recebidas'),
@@ -100,7 +100,7 @@ class OngHomePage extends StatelessWidget {
               },
             ),
 
-            // 🟨 Lista de Parceiros
+            // Lista de Parceiros
             ListTile(
               leading: const Icon(Icons.store_mall_directory),
               title: const Text('Lista de Parceiros'),
@@ -162,7 +162,7 @@ class OngHomePage extends StatelessWidget {
               },
             ),
 
-            // 👤 Perfil da ONG
+            // Perfil da ONG
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Perfil da ONG'),
@@ -179,7 +179,7 @@ class OngHomePage extends StatelessWidget {
 
             const Divider(),
 
-            // 🚪 Logout
+            // Logout
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),

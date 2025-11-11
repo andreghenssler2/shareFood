@@ -36,7 +36,7 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  // 🔹 Máscaras para telefone (8 e 9 dígitos)
+  //  Máscaras para telefone (8 e 9 dígitos)
   final telefoneMask8 = MaskTextInputFormatter(
     mask: '(##) ####-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -213,7 +213,7 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🔹 Telefone com máscara dinâmica
+              //  Telefone com máscara dinâmica
               TextFormField(
                 controller: _telefoneController,
                 keyboardType: TextInputType.phone,

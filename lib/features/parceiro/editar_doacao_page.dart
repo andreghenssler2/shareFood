@@ -86,7 +86,7 @@ class _EditarDoacaoPageState extends State<EditarDoacaoPage> {
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
         
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, // muda a cor da seta para branca
         ),
         centerTitle: true,
       ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../auth/services/auth_service.dart';
 
-// ✅ Telas principais por perfil
+// Telas principais por perfil
 import '../ong/ong_home_page.dart';
 import '../parceiro/parceiro_home_page.dart';
 import '../admin/admin_dashboard_page.dart';
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // 📦 Itens padrão do usuário comum
+            // Itens padrão do usuário comum
             ListTile(
               leading: const Icon(Icons.fastfood),
               title: const Text('Minhas Doações'),
@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
 
             const Divider(),
 
-            // 🏢 Painel ONG
+            // Painel ONG
             ListTile(
               leading: const Icon(Icons.volunteer_activism),
               title: const Text('Painel da ONG'),
@@ -74,7 +74,7 @@ class HomePage extends StatelessWidget {
               },
             ),
 
-            // 🏪 Painel Parceiro
+            // Painel Parceiro
             ListTile(
               leading: const Icon(Icons.store_mall_directory),
               title: const Text('Painel do Parceiro'),
@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
               },
             ),
 
-            // 🧑‍💼 Painel do Administrador (novo)
+            // Painel do Administrador (novo)
             ListTile(
               leading: const Icon(Icons.admin_panel_settings),
               title: const Text('Painel do Administrador'),
@@ -106,7 +106,7 @@ class HomePage extends StatelessWidget {
 
             const Divider(),
 
-            // 🚪 Sair
+            // Sair
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Sair'),

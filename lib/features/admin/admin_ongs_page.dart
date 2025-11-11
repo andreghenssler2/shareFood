@@ -56,7 +56,7 @@ class _AdminOngsPageState extends State<AdminOngsPage> {
                 final ongs = snapshot.data!.docs.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
 
-                  // ✅ Cidade dentro de 'endereco'
+                  // Cidade dentro de 'endereco'
                   final cidade = (data['endereco']?['cidade'] ?? '').toLowerCase();
                   final status = (data['status'] ?? 'pendente').toLowerCase();
 
@@ -177,7 +177,7 @@ class _AdminOngsPageState extends State<AdminOngsPage> {
     );
   }
 
-  // 🔍 mostra detalhes completos da ONG
+  // mostra detalhes completos da ONG
   void _mostrarDetalhes(BuildContext context, Map<String, dynamic> data) {
     showDialog(
       context: context,
@@ -208,7 +208,7 @@ class _AdminOngsPageState extends State<AdminOngsPage> {
     );
   }
 
-  // 🔒 confirmação
+  // confirmação
   Future<bool> _confirmAction(BuildContext context, String title, String message,
       {bool danger = false}) async {
     return await showDialog<bool>(
@@ -240,7 +240,7 @@ class _AdminOngsPageState extends State<AdminOngsPage> {
         false;
   }
 
-  // 🪄 feedback visual pós-ação
+  // feedback visual pós-ação
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

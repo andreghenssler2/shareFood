@@ -166,9 +166,6 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
                                 }
                               },
                               itemBuilder: (context) => const [
-                                // PopupMenuItem(
-                                //     value: 'usuario',
-                                //     child: Text('Tornar Usuário')),
                                 PopupMenuItem(
                                     value: 'ong', child: Text('Tornar ONG')),
                                 PopupMenuItem(
@@ -200,7 +197,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     );
   }
 
-  // 🔍 Nome correto (admin, ong, parceiro)
+  // Nome correto (admin, ong, parceiro)
   Future<String> _getDisplayName(
       String tipo, String userId, Map<String, dynamic> userData) async {
     try {
@@ -238,7 +235,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     return userData['nome'] ?? 'Sem nome';
   }
 
-  // 📄 Detalhes — agora inclui CPF e corAdmin para admin
+  //Detalhes — agora inclui CPF e corAdmin para admin
   Future<void> _mostrarDetalhes(DocumentSnapshot user, String tipo) async {
     final userData = user.data() as Map<String, dynamic>;
     String nome = userData['nome']?.toString() ?? 'Sem nome';
@@ -365,7 +362,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
     );
   }
 
-  // 🔒 Diálogo de confirmação
+  // Diálogo de confirmação
   Future<bool> _confirmAction(BuildContext context, String title, String message,
       {bool danger = false}) async {
     return await showDialog<bool>(
@@ -400,7 +397,7 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
         false;
   }
 
-  // 💬 Feedback pós-ação
+  // Feedback pós-ação
   void _showSnack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

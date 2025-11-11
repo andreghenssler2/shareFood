@@ -86,7 +86,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
         
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, //  muda a cor da seta para branca
         ),
         centerTitle: true,
       ),
@@ -105,7 +105,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 20),
 
-              // 🟦 Título
+              //  Título
               TextFormField(
                 controller: _tituloController,
                 decoration: const InputDecoration(
@@ -117,7 +117,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🟦 Descrição
+              //  Descrição
               TextFormField(
                 controller: _descricaoController,
                 decoration: const InputDecoration(
@@ -131,7 +131,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🟦 Quantidade
+              //  Quantidade
               TextFormField(
                 controller: _quantidadeController,
                 keyboardType: TextInputType.number,
@@ -145,7 +145,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🟦 Unidade
+              //  Unidade
               DropdownButtonFormField<String>(
                 value: _unidadeSelecionada,
                 decoration: const InputDecoration(
@@ -165,7 +165,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🟩 Marca
+              //  Marca
               TextFormField(
                 controller: _marcaController,
                 decoration: const InputDecoration(
@@ -177,7 +177,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 16),
 
-              // 🟩 Validade (mínimo 30 dias)
+              //  Validade (mínimo 30 dias)
               TextFormField(
                 controller: _validadeController,
                 readOnly: true,
@@ -191,7 +191,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                   final DateTime? date = await showDatePicker(
                     context: context,
                     initialDate: hoje.add(const Duration(days: 31)),
-                    firstDate: hoje.add(const Duration(days: 31)), // 🔹 mínimo 30 dias depois de hoje
+                    firstDate: hoje.add(const Duration(days: 31)), // mínimo 30 dias depois de hoje
                     lastDate: DateTime(2100),
                   );
 
@@ -219,7 +219,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
               ),
               const SizedBox(height: 30),
 
-              // 🟦 Botão Criar
+              //  Botão Criar
               ElevatedButton.icon(
                 icon: _isLoading
                     ? const SizedBox(

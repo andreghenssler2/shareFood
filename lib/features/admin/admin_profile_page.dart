@@ -75,7 +75,7 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
   Future<void> _salvarPerfil() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // 🔹 Valida CPF único
+    // Valida CPF único
     final query = await firestore
         .collection('admin')
         .where('cpf', isEqualTo: _cpfController.text)

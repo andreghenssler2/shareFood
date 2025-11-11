@@ -11,7 +11,7 @@ class DoacoesParceiroPage extends StatefulWidget {
 }
 
 class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
-  String filtro = 'ativos'; // 🔹 controla o filtro ativo
+  String filtro = 'ativos'; //  controla o filtro ativo
 
   bool _isNearExpiration(DateTime validade, int days) {
     final hoje = DateTime.now();
@@ -144,7 +144,7 @@ class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
       );
     }
 
-    // 🔹 Define o stream conforme o filtro selecionado
+    // Define o stream conforme o filtro selecionado
     Query doacoesQuery = FirebaseFirestore.instance
         .collection('doacoes')
         .where('parceiroId', isEqualTo: user.uid);
@@ -167,7 +167,7 @@ class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
       ),
       body: Column(
         children: [
-          // 🔹 Botões de filtro
+          // Botões de filtro
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
@@ -180,7 +180,7 @@ class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
             ),
           ),
 
-          // 🔹 Botão de cadastro
+          // Botão de cadastro
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
             child: Align(
@@ -203,7 +203,7 @@ class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
 
           const SizedBox(height: 8),
 
-          // 🔹 Lista de doações
+          // Lista de doações
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: doacoesQuery.snapshots(),
@@ -326,7 +326,7 @@ class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
     );
   }
 
-  // 🔹 Widget auxiliar para criar botões de filtro
+  // Widget auxiliar para criar botões de filtro
   Widget _botaoFiltro(String texto, String valor, Color cor) {
     final bool ativo = filtro == valor;
     return Expanded(

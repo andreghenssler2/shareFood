@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
       final user = await _authService.signUp(email, senha, _tipoUsuario);
 
       if (user != null) {
-        // 🔹 Garante que o Firestore tenha o documento com UID como ID
+        // Garante que o Firestore tenha o documento com UID como ID
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'email': email,
           'tipo': _tipoUsuario,

@@ -72,7 +72,7 @@ class _OngDoacoesPageState extends State<OngDoacoesPage> {
             final num qtdDesejada =
                 num.tryParse(quantidadeController.text) ?? 0;
 
-            // 🔧 Garante que a quantidade vinda do Firestore seja numérica
+            //  Garante que a quantidade vinda do Firestore seja numérica
             final num qtdDisponivel = (dados['quantidade'] is num)
                 ? dados['quantidade']
                 : num.tryParse(dados['quantidade'].toString()) ?? 0;

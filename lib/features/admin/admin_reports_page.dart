@@ -16,7 +16,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
 
-  // 🔄 Stream combinada de várias coleções
+  // Stream combinada de várias coleções
   Stream<Map<String, dynamic>> _reportStream() async* {
     final doacoesStream = firestore.collection('doacoes').snapshots();
     final pedidosStream = firestore.collection('pedidos').snapshots();
@@ -36,7 +36,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
     }
   }
 
-  // 🔹 Função que calcula todos os dados do relatório
+  // Função que calcula todos os dados do relatório
   Future<Map<String, dynamic>> _loadReportData() async {
     final start = DateTime(selectedYear, selectedMonth, 1);
     final end = DateTime(selectedYear, selectedMonth + 1, 1)
@@ -63,7 +63,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
       return data.isAfter(start) && data.isBefore(end);
     }).toList();
 
-    // 🔸 Doações por dia
+    // Doações por dia
     final Map<String, int> doacoesPorDia = {};
     for (var doc in doacoesDocs) {
       final dataCampo = doc.data()['dataDoacao'] ?? doc.data()['criadoEm'];
@@ -72,7 +72,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
       doacoesPorDia[dia] = (doacoesPorDia[dia] ?? 0) + 1;
     }
 
-    // 🔸 Pedidos por dia
+    // Pedidos por dia
     final Map<String, int> pedidosPorDia = {};
     for (var doc in pedidosDocs) {
       final dataCampo = doc.data()['dataPedido'];
@@ -81,7 +81,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
       pedidosPorDia[dia] = (pedidosPorDia[dia] ?? 0) + 1;
     }
 
-    // 🔸 Pedidos por ONG
+    // Pedidos por ONG
     final Map<String, int> pedidosPorOng = {};
     final Map<String, String> nomeCache = {};
     final Map<String, Color> corCache = {};
@@ -128,7 +128,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
     };
   }
 
-  // 🔽 Filtro de Mês/Ano
+  // Filtro de Mês/Ano
   Future<void> _showFilterBottomSheet() async {
     await showModalBottomSheet(
       context: context,
@@ -348,7 +348,7 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
     );
   }
 
-  // 🟠 Conversor de cores
+  // Conversor de cores
   Color _parseColor(dynamic value) {
     if (value is int) return Color(value);
     if (value is String) {

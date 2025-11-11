@@ -27,13 +27,13 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
   bool _isEditing = false;
   bool _cpfBloqueado = false;
 
-  // ✅ Máscara CPF
+  // Máscara CPF
   final cpfMask = MaskTextInputFormatter(
     mask: '###.###.###-##',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  // ✅ Máscara Telefone
+  // Máscara Telefone
   final telefoneMask = MaskTextInputFormatter(
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -65,7 +65,7 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
     if (!_formKey.currentState!.validate() || user == null) return;
 
     try {
-      // 🔹 Verifica se CPF já existe
+      // Verifica se CPF já existe
       final query = await FirebaseFirestore.instance
           .collection('admin')
           .where('cpf', isEqualTo: _cpfController.text.trim())
@@ -99,7 +99,7 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
         _cpfBloqueado = true;
       });
 
-      // ✅ Redireciona para tela principal
+      // Redireciona para tela principal
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const AdminDashboardPage()),
@@ -159,7 +159,7 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              // ✅ CPF formatado e único
+              // CPF formatado e único
               TextFormField(
                 controller: _cpfController,
                 inputFormatters: [cpfMask],
@@ -183,7 +183,7 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              // ✅ Telefone formatado
+              // Telefone formatado
               TextFormField(
                 controller: _celularController,
                 inputFormatters: [telefoneMask],

@@ -34,10 +34,13 @@ dependencies:
   mask_text_input_formatter: 2.9.0
   flutter_masked_text2: ^0.9.1
   syncfusion_flutter_charts: ^31.1.23
-  # Mapa
+  
+  # URL
   url_launcher: ^6.3.0
-  google_maps_flutter: ^2.6.1
-  geocoding: ^3.0.0
+
+  # Mapa
+  # google_maps_flutter: ^2.6.1
+  # geocoding: ^3.0.0
 
   # Ícones
   font_awesome_flutter: ^10.7.0

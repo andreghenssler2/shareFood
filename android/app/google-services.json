@@ -12,7 +12,12 @@
           "package_name": "com.example.sharefood"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "935775560239-rh7dqq319krdfvls9dt3vb1b8jirl6ek.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAcekmNK9uNNmUJ4HjUAHFo_XWbevsfxMk"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "935775560239-rh7dqq319krdfvls9dt3vb1b8jirl6ek.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "935775560239-h5tfeq3e7j6fsrntgdt187gq3kaqvc2u.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sharefood.sharefood"
+              }
+            }
+          ]
         }
       }
     }

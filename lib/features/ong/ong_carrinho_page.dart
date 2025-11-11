@@ -36,7 +36,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       final firestore = FirebaseFirestore.instance;
       final pedidosRef = firestore.collection('pedidos');
 
-      // 🔹 Verificar estoque antes de confirmar
+      // Verificar estoque antes de confirmar
       for (var item in widget.itensCarrinho) {
         final doc =
             await firestore.collection('doacoes').doc(item['doacaoId']).get();
@@ -54,7 +54,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
         }
       }
 
-      // 🔹 Agrupar pedidos por parceiro
+      // Agrupar pedidos por parceiro
       final Map<String, List<Map<String, dynamic>>> pedidosPorParceiro = {};
       for (var item in widget.itensCarrinho) {
         final parceiroId = item['parceiroId'] ?? 'sem_parceiro';
@@ -65,7 +65,7 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
       final batch = firestore.batch();
       List<String> idsPedidos = [];
 
-      // 🔹 Criar 1 pedido por parceiro
+      // Criar 1 pedido por parceiro
       for (var entry in pedidosPorParceiro.entries) {
         final parceiroId = entry.key;
         final itens = entry.value;
@@ -83,13 +83,13 @@ class _OngCarrinhoPageState extends State<OngCarrinhoPage> {
                     'idParceiro': parceiroId,
                     'idProduto': i['doacaoId'],
                     'titulo': i['titulo'],
-                    // 🔧 Garantir que a quantidade seja salva como int
+                    // Garantir que a quantidade seja salva como int
                     'quantidade': ((i['quantidade'] ?? 0) as num).toInt(),
                   })
               .toList(),
         });
 
-        // 🔹 Atualiza estoque (quantidade disponível nas doações)
+        // Atualiza estoque (quantidade disponível nas doações)
         for (var item in itens) {
           final ref = firestore.collection('doacoes').doc(item['doacaoId']);
           final doc = await ref.get();

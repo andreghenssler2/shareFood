@@ -27,7 +27,7 @@ class OngDoacaoDetalhePage extends StatelessWidget {
         backgroundColor: Colors.green,
         
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, // muda a cor da seta para branca
         ),
         centerTitle: true,
       ),

@@ -23,12 +23,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     });
 
     try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailController.text.trim());
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text.trim(),
+      );
 
       setState(() {
-        _message =
-            'Um link de recuperação foi enviado para seu e-mail.';
+        _message = 'Um link de recuperação foi enviado para seu e-mail.';
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -43,9 +43,18 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recuperar Senha'),
+        title: const Text(
+          'Recuperar Senha',
+          style: TextStyle(
+            color: Colors.white, // texto branco no AppBar
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.white, // muda a cor da seta para branca
+        ),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        backgroundColor: const Color.fromARGB(255, 36, 186, 255),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -56,7 +65,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock_reset, size: 80, color: Colors.green),
+                  const Icon(
+                    Icons.lock_reset,
+                    size: 80,
+                    color: Color.fromARGB(255, 13, 110, 253),
+                  ),
                   const SizedBox(height: 20),
                   const Text(
                     'Digite seu e-mail para redefinir a senha',
@@ -90,12 +103,21 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                           child: ElevatedButton(
                             onPressed: _resetPassword,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                13,
+                                110,
+                                253,
+                              ),
                               padding: const EdgeInsets.symmetric(vertical: 14),
                             ),
                             child: const Text(
-                              'Enviar link de redefinição',
-                              style: TextStyle(fontSize: 16),
+                              'Recuperar Senha',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white, // texto branco no botão
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

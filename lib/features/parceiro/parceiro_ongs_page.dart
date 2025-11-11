@@ -38,14 +38,14 @@ class _OngListPageState extends State<OngListPage> {
         ),
         
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, // muda a cor da seta para branca
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
       ),
       body: Column(
         children: [
-          // 🔍 Pesquisa e filtros
+          // Pesquisa e filtros
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -98,7 +98,7 @@ class _OngListPageState extends State<OngListPage> {
             ),
           ),
 
-          // 📋 Lista de ONGs
+          // Lista de ONGs
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance.collection('ongs').snapshots(),

@@ -66,7 +66,7 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage>
     super.dispose();
   }
 
-  // 🔹 Diálogo de confirmação
+  // Diálogo de confirmação
   Future<bool> _confirmAction(
     BuildContext context,
     String title,
@@ -175,7 +175,7 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage>
     );
   }
 
-  // 🔸 Aba de Doações com ações do admin
+  // Aba de Doações com ações do admin
   Widget _buildDoacoesTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: firestore.collection('doacoes').snapshots(),
@@ -272,7 +272,7 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage>
     );
   }
 
-  // 🔹 Aba de Pedidos com ações do admin
+  // Aba de Pedidos com ações do admin
   Widget _buildPedidosTab() {
     return StreamBuilder<QuerySnapshot>(
       stream: firestore.collection('pedidos').snapshots(),

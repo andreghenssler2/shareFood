@@ -52,13 +52,13 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
         ),
         
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, //  muda a cor da seta para branca
         ),
         centerTitle: true,
       ),
       body: Column(
         children: [
-          // 🔽 Filtro de status
+          // Filtro de status
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropdownButtonFormField<String>(
@@ -81,19 +81,15 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
             ),
           ),
 
-          // 🔹 Lista de pedidos
+          //  Lista de pedidos
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              // ✅ OPÇÃO 1 — Ordenação local (funciona sem índice)
+              //   Ordenação local (funciona sem índice)
               stream: pedidosRef
                   .where('idOng', isEqualTo: user?.uid)
                   .snapshots(),
 
-              // ✅ OPÇÃO 2 — Ordenação direto no Firestore (requer índice composto)
-              // stream: pedidosRef
-              //     .where('idOng', isEqualTo: user?.uid)
-              //     .orderBy('dataPedido', descending: true)
-              //     .snapshots(),
+
 
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -106,14 +102,14 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                   );
                 }
 
-                // 🔹 Filtra e ordena localmente
+                //  Filtra e ordena localmente
                 var pedidos = snapshot.data!.docs.where((doc) {
                   final status = doc['status'] ?? 'Pendente';
                   if (filtroStatus == 'Todos') return true;
                   return status == filtroStatus;
                 }).toList();
 
-                // 🔹 Ordena por dataPedido (mais recentes primeiro)
+                //  Ordena por dataPedido (mais recentes primeiro)
                 pedidos.sort((a, b) {
                   final dataA = a['dataPedido'];
                   final dataB = b['dataPedido'];
@@ -135,7 +131,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                     final dataPedido = data['dataPedido'];
                     final dataEntrega = data['dataEntrega'];
 
-                    // 📅 Formatação das datas
+                    // Formatação das datas
                     String dataPedidoStr = 'Data não disponível';
                     if (dataPedido is Timestamp) {
                       dataPedidoStr = DateFormat('dd/MM/yyyy HH:mm')
@@ -148,7 +144,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                           .format(dataEntrega.toDate());
                     }
 
-                    // 🎨 Ícone e cor conforme status
+                    // Ícone e cor conforme status
                     IconData icone;
                     Color cor;
                     switch (status) {
@@ -165,7 +161,7 @@ class _OngDoacoesRecebidasPageState extends State<OngDoacoesRecebidasPage> {
                         cor = Colors.orange;
                     }
 
-                    // 🔹 Exibir todos os itens do pedido em um único card
+                    //  Exibir todos os itens do pedido em um único card
                     return FutureBuilder<List<Map<String, dynamic>>>(
                       future: Future.wait(itens.map((item) async {
                         final dados = await _buscarDadosParceiroEProduto(

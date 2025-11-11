@@ -14,7 +14,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final User? user = FirebaseAuth.instance.currentUser;
 
-  /// 🔹 Buscar pedidos do parceiro logado
+  ///  Buscar pedidos do parceiro logado
   Stream<List<Map<String, dynamic>>> _carregarPedidos() async* {
     if (user == null) {
       yield [];
@@ -52,7 +52,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     });
   }
 
-  /// 🔹 Buscar nome da ONG
+  ///  Buscar nome da ONG
   Future<String> _buscarNomeOng(String idOng) async {
     if (idOng.isEmpty) return 'ONG não informada';
     try {
@@ -67,7 +67,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     }
   }
 
-  /// 🔹 Confirmar entrega com data escolhida
+  ///  Confirmar entrega com data escolhida
   Future<void> _confirmarEntrega(
       String pedidoId, List<dynamic> itens, DateTime dataEntrega) async {
     try {
@@ -115,7 +115,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     }
   }
 
-  /// 🔹 Recusar doação (soma no estoque)
+  ///  Recusar doação (soma no estoque)
   Future<void> _recusarDoacao(String pedidoId, List<dynamic> itens) async {
     try {
       final batch = firestore.batch();
@@ -162,7 +162,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
     }
   }
 
-  /// 🔹 Buscar nome do produto
+  ///  Buscar nome do produto
   Future<String> _buscarNomeProduto(Map<String, dynamic> item) async {
     if (item.containsKey('nomeProduto') && item['nomeProduto'] != null) {
       return item['nomeProduto'];
@@ -197,7 +197,7 @@ class _HistoricoPedidosPageState extends State<HistoricoPedidosPage> {
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(
-          color: Colors.white, // 🔹 muda a cor da seta para branca
+          color: Colors.white, //  muda a cor da seta para branca
         ),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),

@@ -6,7 +6,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import '../auth/services/ong_service.dart';
 import '../ong/ong_home_page.dart';
 
-// 🔹 Função para gerar uma cor única e consistente baseada no UID
+//  Função para gerar uma cor única e consistente baseada no UID
 Color _gerarCorUnica(String id) {
   final hash = id.codeUnits.fold(0, (a, b) => a + b);
   final random = Random(hash);
@@ -45,13 +45,13 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
   bool _isEditing = false;
   bool _cnpjBloqueado = false;
 
-  // ✅ Máscara CNPJ
+  // Máscara CNPJ
   final cnpjMask = MaskTextInputFormatter(
     mask: '##.###.###/####-##',
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-  // ✅ Máscaras de telefone
+  // Máscaras de telefone
   final telefoneMask8 = MaskTextInputFormatter(
     mask: '(##) ####-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -91,7 +91,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
         _cnpjBloqueado = true;
       }
 
-      // ✅ Se a ONG ainda não tiver cor, cria automaticamente
+      // Se a ONG ainda não tiver cor, cria automaticamente
       if (dados['corOng'] == null) {
         final novaCor = _gerarCorUnica(widget.uid);
         await _service.salvarPerfil(widget.uid, {'corOng': novaCor.value});
@@ -104,7 +104,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
   Future<void> _salvarPerfil() async {
     if (!_formKey.currentState!.validate() || user == null) return;
 
-    // 🔹 Busca cor existente (ou gera uma nova se não existir)
+    //  Busca cor existente (ou gera uma nova se não existir)
     final perfilAtual = await _service.buscarPerfil(widget.uid);
     final corOng = perfilAtual?['corOng'] ?? _gerarCorUnica(widget.uid).value;
 
@@ -121,7 +121,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
         'cidade': _cidadeController.text.trim(),
         'uf': _ufController.text.trim().toUpperCase(),
       },
-      'corOng': corOng, // ✅ Cor dinâmica
+      'corOng': corOng, // Cor dinâmica
       'atualizadoEm': FieldValue.serverTimestamp(),
     };
 
@@ -225,7 +225,7 @@ class _OngPerfilPageState extends State<OngPerfilPage> {
               ),
               const SizedBox(height: 16),
 
-              // ✅ TELEFONE COM MÁSCARA DINÂMICA
+              // TELEFONE COM MÁSCARA DINÂMICA
               TextFormField(
                 controller: _telefoneController,
                 keyboardType: TextInputType.phone,
