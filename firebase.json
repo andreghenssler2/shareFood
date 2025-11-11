@@ -1,1 +1,16 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"sharefoodfaccat","appId":"1:935775560239:android:8acdb524c42829b3f6dcda","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"sharefoodfaccat","configurations":{"android":"1:935775560239:android:8acdb524c42829b3f6dcda","ios":"1:935775560239:ios:b495edf36e8e3681f6dcda","macos":"1:935775560239:ios:b495edf36e8e3681f6dcda","web":"1:935775560239:web:672ce1290ac9fdc9f6dcda","windows":"1:935775560239:web:58bc6edff4ae2de6f6dcda"}}}}}}
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
