@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'doacoes_parceiro_page.dart';
 
 class ParceiroCriarDoacaoPage extends StatefulWidget {
   const ParceiroCriarDoacaoPage({super.key});
@@ -64,12 +65,17 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Doação criada com sucesso! 🎉')),
         );
-        Navigator.pop(context);
+
+        // ✅ Redirecionar para a página de doações do parceiro
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DoacoesParceiroPage()),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao salvar doação: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao salvar doação: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -84,7 +90,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
-        
+
         iconTheme: const IconThemeData(
           color: Colors.white, //  muda a cor da seta para branca
         ),
@@ -98,10 +104,7 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
             children: [
               const Text(
                 'Preencha as informações da doação:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
 
@@ -191,15 +194,18 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                   final DateTime? date = await showDatePicker(
                     context: context,
                     initialDate: hoje.add(const Duration(days: 31)),
-                    firstDate: hoje.add(const Duration(days: 31)), // mínimo 30 dias depois de hoje
+                    firstDate: hoje.add(
+                      const Duration(days: 31),
+                    ), // mínimo 30 dias depois de hoje
                     lastDate: DateTime(2100),
                   );
 
                   if (date != null) {
                     setState(() {
                       _validadeSelecionada = date;
-                      _validadeController.text =
-                          DateFormat('dd/MM/yyyy').format(date);
+                      _validadeController.text = DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(date);
                     });
                   }
                 },
@@ -230,13 +236,13 @@ class _ParceiroCriarDoacaoPageState extends State<ParceiroCriarDoacaoPage> {
                           color: Colors.white,
                         ),
                       )
-                    : const Icon(Icons.add),
+                    : const Icon(Icons.add, color: Colors.white),
                 label: Text(
                   _isLoading ? 'Salvando...' : 'Criar Doação',
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 0, 42, 179),
+                  backgroundColor: const Color.fromARGB(255, 13, 110, 253),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 18),
                 ),

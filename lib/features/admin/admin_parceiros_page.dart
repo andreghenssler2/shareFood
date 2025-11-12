@@ -17,10 +17,11 @@ class _AdminParceirosPageState extends State<AdminParceirosPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gerenciar Parceiros'),
+        title: const Text('Gerenciar Parceiros',style: TextStyle(color: Colors.white),),
+        backgroundColor: const Color.fromARGB(255, 0, 42, 156),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.filter_alt),
+            icon: const Icon(Icons.filter_alt, color: Colors.white),
             tooltip: 'Filtrar por status',
             onSelected: (v) => setState(() => filtroStatus = v),
             itemBuilder: (context) => const [

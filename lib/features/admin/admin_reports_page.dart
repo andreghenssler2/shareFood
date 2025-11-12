@@ -202,7 +202,8 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Relatórios e Estatísticas'),
+        title: const Text('Relatórios e Estatísticas',style: TextStyle(color: Colors.white),),
+        backgroundColor: const Color.fromARGB(255, 0, 42, 156),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_alt_rounded),

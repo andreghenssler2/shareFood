@@ -190,7 +190,7 @@ class _DoacoesParceiroPageState extends State<DoacoesParceiroPage> {
                   Navigator.pushNamed(context, '/criarDoacao');
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: const Color.fromARGB(255, 13, 110, 253),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),

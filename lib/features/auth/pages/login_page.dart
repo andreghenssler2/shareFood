@@ -213,9 +213,11 @@ class _LoginPageState extends State<LoginPage> {
                   : ElevatedButton(
                       onPressed: _login,
                       style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 13, 110, 253),
                         minimumSize: const Size(double.infinity, 48),
+                        
                       ),
-                      child: const Text('Entrar'),
+                      child: const Text('Entrar',style: TextStyle(color: Colors.white, fontSize: 14),),
                     ),
               const SizedBox(height: 12),
               TextButton(
@@ -225,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                     MaterialPageRoute(builder: (_) => const RegisterPage()),
                   );
                 },
-                child: const Text('Criar conta'),
+                child: const Text('Criar conta',style: TextStyle(color: Color.fromARGB(255, 8, 77, 228), fontSize: 12)),
               ),
               TextButton(
                 onPressed: () {
@@ -236,7 +238,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
-                child: const Text('Esqueceu a senha?'),
+                child: const Text('Esqueceu a senha?',style: TextStyle(color: Color.fromARGB(255, 161, 0, 0), fontSize: 12)),
               ),
             ],
           ),

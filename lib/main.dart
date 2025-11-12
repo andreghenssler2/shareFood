@@ -8,6 +8,7 @@ import 'features/ong/ong_home_page.dart';
 import 'features/parceiro/parceiro_home_page.dart';
 import 'features/admin/admin_dashboard_page.dart';
 import 'features/parceiro/editar_doacao_page.dart';
+import 'features/parceiro/parceiro_criar_doacao_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,6 +77,7 @@ class MyApp extends StatelessWidget {
               final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
               return EditarDoacaoPage(doacao: args);
             },
+            '/criarDoacao': (context) => const ParceiroCriarDoacaoPage(),
           },
 
           // Aqui está o ponto principal

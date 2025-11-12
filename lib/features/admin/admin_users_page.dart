@@ -17,11 +17,12 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gerenciar Usuários'),
-        backgroundColor: Colors.green,
+        title: const Text('Gerenciar Usuários',style: TextStyle(color: Colors.white),),
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: const Color.fromARGB(255, 0, 42, 156),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.filter_alt),
+            icon: const Icon(Icons.filter_alt,color: Colors.white,),
             tooltip: 'Filtrar por tipo de usuário',
             onSelected: (v) => setState(() => filtroTipo = v),
             itemBuilder: (context) => const [

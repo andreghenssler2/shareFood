@@ -295,7 +295,7 @@ class _ParceiroPerfilPageState extends State<ParceiroPerfilPage> {
                   icon: const Icon(Icons.save, color: Colors.white),
                   label: const Text('Salvar Alterações'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color.fromARGB(255, 13, 110, 253),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),

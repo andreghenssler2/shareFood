@@ -133,7 +133,7 @@ class _AdminPerfilPageState extends State<AdminPerfilPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red.shade800,
+        backgroundColor: const Color.fromARGB(255, 0, 42, 156),
         title: const Text('Meu Perfil - Administrador ',
             style: TextStyle(color: Colors.white)),
         iconTheme: const IconThemeData(color: Colors.white),

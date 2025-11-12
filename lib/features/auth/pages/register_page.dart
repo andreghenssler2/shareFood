@@ -136,7 +136,7 @@ class _RegisterPageState extends State<RegisterPage> {
               value: _tipoUsuario,
               decoration: const InputDecoration(labelText: 'Tipo de Usuário'),
               items: const [
-                DropdownMenuItem(value: 'admin', child: Text('Administrador')),
+                // DropdownMenuItem(value: 'admin', child: Text('Administrador')),
                 DropdownMenuItem(value: 'ong', child: Text('ONG')),
                 DropdownMenuItem(value: 'parceiro', child: Text('Parceiro')),
               ],
@@ -151,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: _registrar,
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 48),
-                      backgroundColor: const Color.fromARGB(255, 0, 42, 179),
+                      backgroundColor: const Color.fromARGB(255, 13, 110, 253),
                     ),
                     child: const Text(
                       'Registrar',
@@ -166,7 +166,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   MaterialPageRoute(builder: (_) => const LoginPage()),
                 );
               },
-              child: const Text('Já tem conta? Fazer login'),
+              child: const Text('Já tem conta? Fazer login', style: TextStyle(color: Color.fromARGB(255, 8, 77, 228), fontSize: 12)),
             ),
           ],
         ),

@@ -35,7 +35,7 @@ class AdminDashboardPage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(158, 13, 0, 1),
+        backgroundColor: const Color.fromARGB(255, 0, 42, 156),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
