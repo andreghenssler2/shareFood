@@ -382,14 +382,14 @@ class _AdminUsersPageState extends State<AdminUsersPage> {
             content: Text(message),
             actions: [
               TextButton(
-                child: const Text('Cancelar'),
+                child: const Text('Confirmar', style: TextStyle(color: Colors.white, ),),
                 onPressed: () => Navigator.pop(ctx, false),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: danger ? Colors.red : Colors.blue,
                 ),
-                child: const Text('Confirmar'),
+                child: const Text('Confirmar', style: TextStyle(color: Colors.white, ),),
                 onPressed: () => Navigator.pop(ctx, true),
               ),
             ],

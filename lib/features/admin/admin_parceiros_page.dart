@@ -19,6 +19,9 @@ class _AdminParceirosPageState extends State<AdminParceirosPage> {
       appBar: AppBar(
         title: const Text('Gerenciar Parceiros',style: TextStyle(color: Colors.white),),
         backgroundColor: const Color.fromARGB(255, 0, 42, 156),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.filter_alt, color: Colors.white),
@@ -226,13 +229,13 @@ class _AdminParceirosPageState extends State<AdminParceirosPage> {
             content: Text(message),
             actions: [
               TextButton(
-                child: const Text('Cancelar'),
+                child: const Text('Cancelar',style: TextStyle(color: Color.fromARGB(255, 161, 0, 0), )),
                 onPressed: () => Navigator.pop(ctx, false),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: danger ? Colors.red : Colors.blue),
-                child: const Text('Confirmar'),
+                child: const Text('Confirmar', style: TextStyle(color: Colors.white, ),),
                 onPressed: () => Navigator.pop(ctx, true),
               ),
             ],

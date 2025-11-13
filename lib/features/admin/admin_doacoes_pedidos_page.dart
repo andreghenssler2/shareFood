@@ -89,14 +89,14 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage>
             content: Text(message),
             actions: [
               TextButton(
-                child: const Text('Cancelar'),
+                child: const Text('Cancelar',style: TextStyle(color: Color.fromARGB(255, 161, 0, 0), )),
                 onPressed: () => Navigator.pop(ctx, false),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: danger ? Colors.red : Colors.blue,
                 ),
-                child: const Text('Confirmar'),
+                child: const Text('Confirmar', style: TextStyle(color: Colors.white, ),),
                 onPressed: () => Navigator.pop(ctx, true),
               ),
             ],
@@ -120,7 +120,10 @@ class _AdminDoacoesPedidosPageState extends State<AdminDoacoesPedidosPage>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Doações e Pedidos'),
-        // backgroundColor: Colors.blue.shade700,
+        backgroundColor: const Color.fromARGB(255, 0, 42, 156),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

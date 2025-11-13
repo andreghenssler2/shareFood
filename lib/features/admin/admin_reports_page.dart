@@ -204,9 +204,12 @@ class _AdminReportsPageState extends State<AdminReportsPage> {
       appBar: AppBar(
         title: const Text('Relatórios e Estatísticas',style: TextStyle(color: Colors.white),),
         backgroundColor: const Color.fromARGB(255, 0, 42, 156),
+        iconTheme: const IconThemeData(
+          color: Colors.white,
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_alt_rounded),
+            icon: const Icon(Icons.filter_alt_rounded,color: Colors.white),
             tooltip: 'Filtrar por mês/ano',
             onPressed: _showFilterBottomSheet,
           ),
