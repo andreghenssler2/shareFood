@@ -1,15 +1,16 @@
 {
   "hosting": {
-    "public": "build/web",
+    "public": "empty",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
+    "redirects": [
       {
-        "source": "**",
-        "destination": "/index.html"
+        "source": "/",
+        "destination": "https://firebasestorage.googleapis.com/v0/b/sharefoodfaccat.firebasestorage.app/o/app-release.apk?alt=media&token=c449a876-c481-4bf8-b293-d19dc0de63cf",
+        "type": 302
       }
     ]
   }
